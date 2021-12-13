@@ -1,0 +1,40 @@
+{
+	"name": "@treecg/ldes-ngsild-connector",
+	"version": "0.0.4-alpha.0",
+	"description": "> TODO: description",
+	"homepage": "https://github.com/TREEcg/connectors#readme",
+	"license": "ISC",
+	"main": "index.js",
+	"typings": "index",
+	"directories": {
+		"lib": "lib"
+	},
+	"files": [
+		"lib/**/*.d.ts",
+		"lib/**/*.js",
+		"index.d.ts",
+		"index.js",
+		"template.js"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/TREEcg/connectors.git"
+	},
+	"bugs": {
+		"url": "https://github.com/TREEcg/connectors/issues"
+	},
+	"scripts": {
+		"build": "npm run build:ts",
+		"build:ts": "tsc"
+	},
+	"devDependencies": {
+		"typescript": "^4.4.3"
+	},
+	"dependencies": {
+		"@brechtvdv/rdfs2ngsi-ld.js": "^0.0.5",
+		"@treecg/ldes-types": "^0.0.4-alpha.0",
+		"interval-promise": "^1.4.0",
+		"node-fetch": "latest",
+		"slugify": "^1.6.0"
+	}
+}
