@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 const interval = require('interval-promise');
 
-export default class OpenIdFetcher {
+export class OpenIdFetcher {
   private accessToken: string;
   private readonly expiresIn = 3_600;
 
@@ -14,11 +14,12 @@ export default class OpenIdFetcher {
 
     // Silent refresh
     console.log(`set interval: ${this.expiresIn}`);
-    interval(async () => this.authenticate(), this.expiresIn * 900); // Convert to miliseconds + take margin (10%)
+    // Convert to miliseconds + take margin (10%)
+    interval(async () => this.authenticate(), this.expiresIn * 900);
   }
 
   private async authenticate(): Promise<void> {
-    const authString = new Buffer(`${this.clientId}:${this.clientSecret}`).toString('base64');
+    const authString = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
     const headersPost = {
       Authorization: `Basic ${authString}`,
       'Content-type': 'application/json',
@@ -34,7 +35,7 @@ export default class OpenIdFetcher {
         if (json.access_token) {
           this.accessToken = json.access_token;
         } else {
-          throw 'Access Token not available';
+          throw new Error('Access Token not available');
         }
       })
       .catch(error => console.error(error));
@@ -42,7 +43,7 @@ export default class OpenIdFetcher {
 
   public async fetch(url: string, body: object, headers: object): Promise<any> {
     let headersPost = {
-      Authorization: `Bearer ${this.accessToken}`
+      Authorization: `Bearer ${this.accessToken}`,
     };
     headersPost = { ...headersPost, ...headers };
 
@@ -51,11 +52,11 @@ export default class OpenIdFetcher {
       headers: headersPost,
       body: JSON.stringify(body),
     })
-      .then((res: { json: () => any; }) => res.json())
+      .then((res: { json: () => any }) => res.json())
       .then(json => {
         if (json.errors && json.errors[0] && json.errors[0].error && json.errors[0].error.title) {
-          for (const e in json.errors) {
-            console.error(json.errors[e].error.title);
+          for (const error in json.errors) {
+            console.error(json.errors[error].error.title);
           }
         } else if (json.type === 'https://uri.etsi.org/ngsi-ld/errors/InternalError' && json.title && json.detail) {
           console.error(`${json.title}: ${json.detail}`);

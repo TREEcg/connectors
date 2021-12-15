@@ -1,7 +1,7 @@
 import { Ngsildify } from '@brechtvdv/rdfs2ngsi-ld.js';
 import type { IConfigConnector, IWritableConnector, LdesShape } from '@treecg/ldes-types';
 import fetch from 'node-fetch';
-import OpenIdFetcher from './OpenIdFetcher';
+import { OpenIdFetcher } from './OpenIdFetcher';
 
 export interface IConfigNgsiLdConnector extends IConfigConnector {
   ngsiEndpoint: string;
@@ -23,7 +23,7 @@ export class NgsiLdConnector implements IWritableConnector {
 
   public constructor(config: IConfigNgsiLdConnector, shape: LdesShape, id: string) {
     this.members = [];
-    console.log('Shape:' + shape);
+    console.log(`Shape:${shape}`);
     this.ngsiEndpoint = config.ngsiEndpoint;
 
     if (config.clientId && config.clientSecret && config.tokenEndpoint) {
@@ -34,7 +34,7 @@ export class NgsiLdConnector implements IWritableConnector {
     }
   }
 
-  private initOpenIdFetcher() {
+  private initOpenIdFetcher(): void {
     this.fetch.initToken();
   }
 
