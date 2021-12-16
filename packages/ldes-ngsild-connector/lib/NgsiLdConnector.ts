@@ -1,5 +1,6 @@
 import { Ngsildify } from '@brechtvdv/rdfs2ngsi-ld.js';
 import type { IConfigConnector, IWritableConnector, LdesShape } from '@treecg/ldes-types';
+// @ts-expect-error Use from instead of require
 import fetch from 'node-fetch';
 import { OpenIdFetcher } from './OpenIdFetcher';
 
@@ -23,7 +24,6 @@ export class NgsiLdConnector implements IWritableConnector {
 
   public constructor(config: IConfigNgsiLdConnector, shape: LdesShape, id: string) {
     this.members = [];
-    console.log(`Shape:${shape}`);
     this.ngsiEndpoint = config.ngsiEndpoint;
 
     if (config.clientId && config.clientSecret && config.tokenEndpoint) {

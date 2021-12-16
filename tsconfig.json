@@ -14,11 +14,12 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "include": [
     "packages/*/index.ts",
     "packages/*/bin/**/*",
     "packages/*/lib/**/*",
   ],
-  "exclude": ["**/node_modules", "**/__tests__/*"]
+  "exclude": ["**/node_modules", "**/test/*"]
 }

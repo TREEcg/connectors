@@ -1,3 +1,4 @@
+// @ts-expect-error Use from instead of require
 import fetch from 'node-fetch';
 const interval = require('interval-promise');
 
@@ -30,7 +31,7 @@ export class OpenIdFetcher {
       headers: headersPost,
       body: JSON.stringify({ grant_type: 'client_credentials' }),
     })
-      .then(res => res.json())
+      .then((res: any) => res.json())
       .then((json: any) => {
         if (json.access_token) {
           this.accessToken = json.access_token;
@@ -38,7 +39,7 @@ export class OpenIdFetcher {
           throw new Error('Access Token not available');
         }
       })
-      .catch(error => console.error(error));
+      .catch((error: unknown) => console.error(error));
   }
 
   public async fetch(url: string, body: object, headers: object): Promise<any> {
@@ -52,8 +53,8 @@ export class OpenIdFetcher {
       headers: headersPost,
       body: JSON.stringify(body),
     })
-      .then((res: { json: () => any }) => res.json())
-      .then(json => {
+      .then((res: any) => res.json())
+      .then((json: any) => {
         if (json.errors && json.errors[0] && json.errors[0].error && json.errors[0].error.title) {
           for (const error in json.errors) {
             console.error(json.errors[error].error.title);
@@ -63,7 +64,7 @@ export class OpenIdFetcher {
         }
         return json;
       })
-      .catch(error => {
+      .catch((error: any) => {
         console.error(error);
         return null;
       });

@@ -1,4 +1,7 @@
 module.exports = {
+  env: {
+    jest: true
+  },
   root: true,
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -34,6 +37,8 @@ module.exports = {
     XMLHttpRequest: false,
   },
   rules: {
+    "mocha/no-synchronous-tests": "off",
+    "mocha/valid-test-description": "off",
     // Default
     "unicorn/prefer-at": "off",
     "array-bracket-spacing": "off",
@@ -186,10 +191,6 @@ module.exports = {
         fail: false,
       },
       rules: {
-        "mocha/no-synchronous-tests": "off",
-        "mocha/valid-test-description": "off",
-        "mocha/no-sibling-hooks": "off",
-
         "max-statements-per-line": "off",
         "id-length": "off",
         "arrow-body-style": "off",
