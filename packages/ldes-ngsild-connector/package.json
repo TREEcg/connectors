@@ -32,7 +32,7 @@
 		"typescript": "^4.4.3"
 	},
 	"dependencies": {
-		"@brechtvdv/rdfs2ngsi-ld.js": "^0.0.5",
+		"@brechtvdv/rdfs2ngsi-ld.js": "^0.0.6",
 		"@treecg/ldes-types": "^0.0.4-alpha.0",
 		"interval-promise": "^1.4.0",
 		"node-fetch": "^2.6.6"
