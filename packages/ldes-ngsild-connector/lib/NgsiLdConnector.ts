@@ -49,7 +49,7 @@ export class NgsiLdConnector implements IWritableConnector {
     const headers = {
       'Content-Type': 'application/ld+json',
     };
-    const url = `${this.ngsiEndpoint}entityOperations/create`;
+    const url = `${this.ngsiEndpoint}entityOperations/upsert`;
 
     this.fetch.fetch(url, objectNgsi, headers);
     console.log('Succesfully created entity in broker');
