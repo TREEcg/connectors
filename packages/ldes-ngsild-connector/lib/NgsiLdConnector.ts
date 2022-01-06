@@ -46,6 +46,7 @@ export class NgsiLdConnector implements IWritableConnector {
     console.log('write version');
     const ngsildify = new Ngsildify();
     const objectNgsi = await ngsildify.transform(member);
+    console.log(`Transformed objects: ${JSON.stringify(objectNgsi)}`);
     const headers = {
       'Content-Type': 'application/ld+json',
     };
