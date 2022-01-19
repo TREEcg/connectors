@@ -1,5 +1,5 @@
-// @ts-expect-error Use from instead of require
 import fetch from 'node-fetch';
+import type { RequestInfo, RequestInit } from 'node-fetch';
 const interval = require('interval-promise');
 
 export class OpenIdFetcher {
@@ -42,31 +42,32 @@ export class OpenIdFetcher {
       .catch((error: unknown) => console.error(error));
   }
 
-  public async fetch(url: string, body: object, headers: object): Promise<any> {
-    let headersPost = {
-      Authorization: `Bearer ${this.accessToken}`,
+  public async fetch(url: RequestInfo, options?: RequestInit): Promise<any> {
+    let requestInit: RequestInit = {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+      },
     };
-    headersPost = { ...headersPost, ...headers };
 
-    await fetch(url, {
-      method: 'POST',
-      headers: headersPost,
-      body: JSON.stringify(body),
-    })
-      .then((res: any) => res.json())
-      .then((json: any) => {
-        if (json.errors && json.errors[0] && json.errors[0].error && json.errors[0].error.title) {
-          for (const error in json.errors) {
-            console.error(json.errors[error].error.title);
-          }
-        } else if (json.type === 'https://uri.etsi.org/ngsi-ld/errors/InternalError' && json.title && json.detail) {
-          console.error(`${json.title}: ${json.detail}`);
+    if (options) {
+      options.headers = { ...requestInit.headers, ...options.headers };
+      requestInit = options;
+    }
+
+    try {
+      const res = await fetch(url, requestInit);
+      const json = await res.json();
+      if (json.errors && json.errors[0] && json.errors[0].error && json.errors[0].error.title) {
+        for (const error in json.errors) {
+          console.error(json.errors[error].error.title);
         }
-        return json;
-      })
-      .catch((error: any) => {
-        console.error(error);
-        return null;
-      });
+      } else if (json.type === 'https://uri.etsi.org/ngsi-ld/errors/InternalError' && json.title && json.detail) {
+        console.error(`${json.title}: ${json.detail}`);
+      }
+      return json;
+    } catch (error: unknown) {
+      console.error(error);
+      return null;
+    }
   }
 }

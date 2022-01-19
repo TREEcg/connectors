@@ -5,7 +5,7 @@ import NgsiLdConnectorWithRequire = require('../lib/NgsiLdConnector');
 
 describe('NgsiLdConnector', () => {
   const ldesUrl = 'https://apidg.gent.be/opendata/adlib2eventstream/v1/dmg/objecten';
-  const config: IConfigNgsiLdConnector = {
+  let config: IConfigNgsiLdConnector = {
     amountOfVersions: 0,
     ngsiEndpoint: 'https://rc.obelisk.ilabt.imec.be/api/v3/ext/ngsi/61928c6cf91b09530b04fe8a/ngsi-ld/v1/',
   };
@@ -30,5 +30,21 @@ describe('NgsiLdConnector', () => {
 
   it('should work with require', () => {
     expect(new NgsiLdConnectorWithRequire.NgsiLdConnector(config, defaultShape, '1')).toBeInstanceOf(NgsiLdConnector);
+  });
+
+  it('should work without authentication', async () => {
+    config = {
+      amountOfVersions: 0,
+      ngsiEndpoint: 'http://localhost:9090/ngsi-ld/v1/',
+    };
+    const con = new NgsiLdConnector(config, defaultShape, '1');
+    const member = {
+      '@context': ['https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld'],
+      '@id': 'https://lodi.ilabt.imec.be/odala/data/observations/16584343831',
+      '@type': 'Observation',
+      'Observation.observedProperty': 'http://www.wikidata.org/entity/Q48035511',
+      'Observation.hasSimpleResult': '8.10 ug/m3',
+    };
+    await con.writeVersion(member);
   });
 });
