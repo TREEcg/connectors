@@ -43,16 +43,24 @@ export class NgsiLdConnector implements IWritableConnector {
    * @param member
    */
   public async writeVersion(member: any): Promise<void> {
-    console.log('write version');
-    const ngsildify = new Ngsildify();
-    const objectsNgsi = await ngsildify.transform(member);
-    console.log(`Transformed objects: ${JSON.stringify(objectsNgsi)}`);
-    for (const obj of objectsNgsi) {
-      const created = await this.createEntity(obj);
+    try {
+      console.log('write version');
+      const ngsildify = new Ngsildify();
+      const objectsNgsi = await ngsildify.transform(member);
+      console.log(`Transformed objects: ${JSON.stringify(objectsNgsi)}`);
+      for (const obj of objectsNgsi) {
+        try {
+          const created = await this.createEntity(obj);
 
-      if (!created) {
-        await this.updateEntity(obj);
+          if (!created) {
+            await this.updateEntity(obj);
+          }
+        } catch (error: unknown) {
+          console.error(error);
+        }
       }
+    } catch (error: unknown) {
+      console.error(error);
     }
   }
 

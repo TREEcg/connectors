@@ -54,20 +54,15 @@ export class OpenIdFetcher {
       requestInit = options;
     }
 
-    try {
-      const res = await fetch(url, requestInit);
-      const json = await res.json();
-      if (json.errors && json.errors[0] && json.errors[0].error && json.errors[0].error.title) {
-        for (const error in json.errors) {
-          console.error(json.errors[error].error.title);
-        }
-      } else if (json.type === 'https://uri.etsi.org/ngsi-ld/errors/InternalError' && json.title && json.detail) {
-        console.error(`${json.title}: ${json.detail}`);
+    const res = await fetch(url, requestInit);
+    const json = await res.json();
+    if (json.errors && json.errors[0] && json.errors[0].error && json.errors[0].error.title) {
+      for (const error in json.errors) {
+        console.error(json.errors[error].error.title);
       }
-      return json;
-    } catch (error: unknown) {
-      console.error(error);
-      return null;
+    } else if (json.type === 'https://uri.etsi.org/ngsi-ld/errors/InternalError' && json.title && json.detail) {
+      console.error(`${json.title}: ${json.detail}`);
     }
+    return json;
   }
 }
