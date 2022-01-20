@@ -37,6 +37,7 @@ module.exports = {
     XMLHttpRequest: false,
   },
   rules: {
+    "no-empty": "off",
     "mocha/no-synchronous-tests": "off",
     "mocha/valid-test-description": "off",
     // Default

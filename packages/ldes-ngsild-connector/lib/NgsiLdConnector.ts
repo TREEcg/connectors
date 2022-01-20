@@ -9,12 +9,21 @@ export interface IConfigNgsiLdConnector extends IConfigConnector {
   clientId?: string;
   clientSecret?: string;
   tokenEndpoint?: string;
+  enableLdesVersioning?: IConfigLdesVersioning;
+}
+
+export interface IConfigLdesVersioning {
+  // Will be auto generated in NGSI-LDES with the createdAt/modifiedAt property
+  timestampPath?: string;
+  versionOfPath?: string;
 }
 
 export class NgsiLdConnector implements IWritableConnector {
   private readonly members: any[];
   private readonly fetcher: any = {};
   private readonly ngsiEndpoint: string;
+  private readonly enableLdesVersioning: IConfigLdesVersioning;
+
   /**
    * Templates for the backend generator.
    */
@@ -25,6 +34,14 @@ export class NgsiLdConnector implements IWritableConnector {
   public constructor(config: IConfigNgsiLdConnector, shape: LdesShape, id: string) {
     this.members = [];
     this.ngsiEndpoint = config.ngsiEndpoint;
+
+    if (config.enableLdesVersioning) {
+      this.enableLdesVersioning = config.enableLdesVersioning;
+
+      if (!this.enableLdesVersioning.versionOfPath) {
+        this.enableLdesVersioning.versionOfPath = 'http://purl.org/dc/terms/isVersionOf';
+      }
+    }
 
     if (config.clientId && config.clientSecret && config.tokenEndpoint) {
       this.fetcher = new OpenIdFetcher(config.clientId, config.clientSecret, config.tokenEndpoint);
@@ -50,6 +67,23 @@ export class NgsiLdConnector implements IWritableConnector {
       console.log(`Transformed objects: ${JSON.stringify(objectsNgsi)}`);
       for (const obj of objectsNgsi) {
         try {
+          const memberURI = obj.id ? obj.id : obj['@id'];
+
+          // Add versioning when versionOfPath is not available
+          if (this.enableLdesVersioning && this.enableLdesVersioning.versionOfPath &&
+              !obj[this.enableLdesVersioning.versionOfPath]) {
+            // Create version URI
+            const now = new Date().toISOString();
+            const versionURI = `${memberURI}/${now}`;
+            obj[this.enableLdesVersioning.versionOfPath] = memberURI;
+
+            if (obj.id) {
+              obj.id = versionURI;
+            } else {
+              obj['@id'] = versionURI;
+            }
+          }
+
           const created = await this.createEntity(obj);
 
           if (!created) {

@@ -47,4 +47,22 @@ describe('NgsiLdConnector', () => {
     };
     await con.writeVersion(member);
   });
+
+  it('should work with versioning enabled', async () => {
+    config = {
+      amountOfVersions: 0,
+      ngsiEndpoint: 'http://localhost:9090/ngsi-ld/v1/',
+      enableLdesVersioning: {
+      },
+    };
+    const con = new NgsiLdConnector(config, defaultShape, '1');
+    const member = {
+      '@context': ['https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld'],
+      '@id': 'https://lodi.ilabt.imec.be/odala/data/observations/16584343831',
+      '@type': 'Observation',
+      'Observation.observedProperty': 'http://www.wikidata.org/entity/Q48035511',
+      'Observation.hasSimpleResult': '8.10 ug/m3',
+    };
+    await con.writeVersion(member);
+  });
 });
