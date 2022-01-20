@@ -1,6 +1,6 @@
 {
-	"name": "@treecg/ldes-ngsild-connector",
-	"version": "0.0.14",
+	"name": "@treecg/connector-write-ngsi-ld",
+	"version": "0.0.16",
 	"description": "> TODO: description",
 	"homepage": "https://github.com/TREEcg/connectors#readme",
 	"license": "ISC",

@@ -75,7 +75,10 @@ export class NgsiLdConnector implements IWritableConnector {
             // Create version URI
             const now = new Date().toISOString();
             const versionURI = `${memberURI}/${now}`;
-            obj[this.enableLdesVersioning.versionOfPath] = memberURI;
+            obj[this.enableLdesVersioning.versionOfPath] = {
+              '@type': 'Relationship',
+              object: memberURI,
+            };
 
             if (obj.id) {
               obj.id = versionURI;
