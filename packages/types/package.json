@@ -1,0 +1,30 @@
+{
+  "name": "types",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "ajuvercr <arthur.vercruysse@ugent.be>",
+  "homepage": "https://github.com/TREEcg/connectors#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "files": [
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TREEcg/connectors.git"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
+  },
+  "bugs": {
+    "url": "https://github.com/TREEcg/connectors/issues"
+  }
+}
