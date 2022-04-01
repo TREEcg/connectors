@@ -1,7 +1,7 @@
 {
-  "name": "types",
+  "name": "@connectors/types",
   "version": "1.0.0",
-  "description": "> TODO: description",
+  "description": "Types joning all connectors",
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
   "license": "ISC",

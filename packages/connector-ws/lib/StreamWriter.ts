@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { EventStream, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamWriter, Serializer, StreamWriter } from "../../types";
+import { EventStream, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamWriter, Serializer, StreamWriter } from "@connectors/types";
 
 import { LDESStreamType, StreamType } from '../index';
 
