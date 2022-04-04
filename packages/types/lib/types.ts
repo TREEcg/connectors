@@ -1,4 +1,7 @@
 
+export interface StreamType { "data": IRecord, "metadata": IMetadata };
+export interface LDESStreamType { "data": IMember, "metadata": EventStream, "fragment": IFragmentInfo };
+
 export interface IRecord { };
 
 export interface IMember extends IRecord {
@@ -72,12 +75,12 @@ export interface LDESStreamReader extends StreamReader {
 }
 
 export interface StreamWriter {
-    push(item: IRecord): void;
-    pushMetadata(meta: IMetadata): void;
+    push(item: IRecord): Promise<void>;
+    pushMetadata(meta: IMetadata): Promise<void>;
 }
 
 export interface LDESStreamWriter extends StreamWriter {
-    pushFragment(fragment: IFragmentInfo): void;
+    pushFragment(fragment: IFragmentInfo): Promise<void>;
 }
 
 

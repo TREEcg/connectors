@@ -1,7 +1,6 @@
 import { WebSocket } from "ws";
-import { EventStream, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamWriter, Serializer, StreamWriter } from "@connectors/types";
+import { EventStream, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamType, LDESStreamWriter, Serializer, StreamType, StreamWriter } from "@connectors/types";
 
-import { LDESStreamType, StreamType } from './Common';
 
 class WSClient<T> {
     private closedQueue: (() => void)[] = [];
@@ -73,11 +72,11 @@ export class WSStreamWriter extends WSClient<StreamType> implements StreamWriter
     constructor(url: string, serializer: Serializer<StreamType>) {
         super(url, serializer, "data");
     }
-    push(item: IRecord): void {
+    async push(item: IRecord): Promise<void> {
         super.sendItem("data", item);
     }
 
-    pushMetadata(meta: IMetadata): void {
+    async pushMetadata(meta: IMetadata): Promise<void> {
         super.sendItem("metadata", meta);
     }
 }
@@ -87,15 +86,15 @@ export class WSLDESStreamWriter extends WSClient<LDESStreamType> implements LDES
         super(url, serializer, "data");
     }
 
-    pushFragment(fragment: IFragmentInfo): void {
+    async pushFragment(fragment: IFragmentInfo): Promise<void> {
         super.sendItem("fragment", fragment);
     }
 
-    push(item: IMember): void {
+    async push(item: IMember): Promise<void> {
         super.sendItem("data", item);
     }
 
-    pushMetadata(meta: EventStream): void {
+    async pushMetadata(meta: EventStream): Promise<void> {
         super.sendItem("metadata", meta);
     }
 }

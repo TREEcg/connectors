@@ -1,0 +1,38 @@
+{
+  "name": "@connectors/kafka",
+  "version": "1.0.0",
+  "description": "Simple Kafka connector",
+  "author": "ajuvercr <arthur.vercruysse@ugent.be>",
+  "homepage": "https://github.com/TREEcg/connectors#readme",
+  "lsd:module": true,
+  "license": "ISC",
+  "main": "index.js",
+  "types": "index",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "files": [
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TREEcg/connectors.git"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "bugs": {
+    "url": "https://github.com/TREEcg/connectors/issues"
+  },
+  "dependencies": {
+    "@connectors/types": "^1.0.0",
+    "kafkajs": "^1.16.0"
+  }
+}
