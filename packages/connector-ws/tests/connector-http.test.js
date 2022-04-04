@@ -8,7 +8,7 @@ function sleep(x) {
 
 describe('connector-http', () => {
     it('needs tests', async () => {
-        const server = new connectorHttp.WSLDESStreamReader(8123, { data: JSON.parse, metadata: JSON.parse }, "0.0.0.0");
+        const server = new connectorHttp.WSLDESStreamReader(8123, { data: JSON.parse, metadata: JSON.parse, fragment: JSON.parse }, "0.0.0.0");
 
         await server.connected();
 
