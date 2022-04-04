@@ -14,14 +14,19 @@ class WSServer<T> {
     private readonly deserializers: Deserializer<T>;
     private server: WebSocketServer;
     private clients: WsInstance<T>[] = [];
+    private open = false;
 
-    constructor(port: number, deserializers: Deserializer<T>) {
+    constructor(port: number, deserializers: Deserializer<T>, host = "localhost") {
         this.deserializers = deserializers;
-        this.server = new WebSocketServer({ port });
+        this.server = new WebSocketServer({ port, host });
+        this.server.on("error", (e) => {
+            console.error("Ws server error:")
+            console.error(e);
+        });
+        this.server.on("listening", () => this.open = true);
         this.server.on("connection", (ws) => {
             const instance = this.setupWs(ws);
             this.clients.push(instance)
-            this.setupWs(ws);
         });
 
         const interval = setInterval(() => {
@@ -40,15 +45,26 @@ class WSServer<T> {
         this.server.on("close", () => clearInterval(interval))
     }
 
+    connected(): Promise<boolean> {
+        return new Promise((res) => {
+            if (this.open) {
+                res(true);
+            } else {
+                this.server.on("listening", () => res(true));
+            }
+        })
+    }
+
     private setupWs(ws: WebSocket): WsInstance<T> {
         const instance: WsInstance<T> = { ws, alive: true };
 
         ws.on("message", (msg: RawData, isBinary: boolean) => {
             if (isBinary && instance.current) {
-                this.broadcast(instance.current, <any>msg);
+                const item = this.deserializers[instance.current](<any>msg);
+                this.broadcast(instance.current, item);
+            } else {
+                instance.current = <keyof T>msg.toString();
             }
-
-            instance.current = <keyof T>msg.toString();
         });
 
         ws.on("pong", () => instance.alive = true);
@@ -65,6 +81,10 @@ class WSServer<T> {
     on<K extends keyof T>(key: K, handler: (item: T[K]) => Promise<void>) {
         const handlers = this.handlers[key] || (this.handlers[key] = []);
         handlers?.push(handler);
+    }
+
+    close() {
+        this.server.close();
     }
 }
 

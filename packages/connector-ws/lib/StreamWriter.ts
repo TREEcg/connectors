@@ -15,8 +15,22 @@ class WSClient<T> {
         this.serializer = serializer;
         this.ws = new WebSocket(url);
         this.setDatatype(startType);
+        this.ws.on("error", (e) => {
+            console.error("WS client error:")
+            console.error(e);
+        });
         this.ws.on("ping", () => this.ws.pong());
         this.ws.on("open", this.init.bind(this));
+    }
+
+    connected(): Promise<boolean> {
+        return new Promise((res) => {
+            if (this.open) {
+                res(true);
+            } else {
+                this.ws.on("open", () => res(true));
+            }
+        })
     }
 
     private init() {
@@ -41,12 +55,17 @@ class WSClient<T> {
     protected sendItem<K extends keyof T>(key: K, item: T[K]) {
         if (this.open) {
             this.setDatatype(key);
-            this.ws.send(item, { binary: true });
+            const ser = this.serializer[key](item);
+            this.ws.send(ser, { binary: true });
         } else {
             this.closedQueue.push(
                 () => this.sendItem(key, item)
             );
         }
+    }
+
+    close() {
+        this.ws.close();
     }
 }
 
