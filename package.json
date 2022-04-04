@@ -49,6 +49,7 @@
     }
   },
   "devDependencies": {
+    "componentsjs-generator": "^3.0.1",
     "@rdfjs/types": "^1.0.1",
     "@types/chai": "^4.2.22",
     "@types/chai-as-promised": "^7.1.4",

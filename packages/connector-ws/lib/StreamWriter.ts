@@ -1,7 +1,7 @@
 import { WebSocket } from "ws";
 import { EventStream, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamWriter, Serializer, StreamWriter } from "@connectors/types";
 
-import { LDESStreamType, StreamType } from '../index';
+import { LDESStreamType, StreamType } from './Common';
 
 class WSClient<T> {
     private closedQueue: (() => void)[] = [];

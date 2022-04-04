@@ -81,5 +81,5 @@ export interface LDESStreamWriter extends StreamWriter {
 }
 
 
-export type Serializer<T> = { [P in keyof T]: (item: T) => any }  
-export type Deserializer<T> = { [P in keyof T]: (item: any) => T }  
+export type Serializer<T> = { [P in keyof T]: (item: T[P]) => any }
+export type Deserializer<T> = { [P in keyof T]: (item: any) => T[P] }  

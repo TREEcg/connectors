@@ -1,6 +1,8 @@
 node_modules
 coverage
-packages/**/*.js
+packages/*/index.js
+packages/**/lib/**/*.js
 packages/**/*.d.ts
 .nyc_output
 lerna-debug.log
+components

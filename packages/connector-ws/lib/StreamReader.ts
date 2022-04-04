@@ -1,6 +1,6 @@
 import { Deserializer, EventStream, Handler, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamWriter, SimpleStream, Stream, StreamReader } from "@connectors/types";
 import { Event, RawData, WebSocket, WebSocketServer } from 'ws';
-import { LDESStreamType, StreamType } from "..";
+import { LDESStreamType, StreamType } from "./Common";
 
 
 type WsInstance<T> = {

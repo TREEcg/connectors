@@ -2,10 +2,12 @@
   "name": "@connectors/ws",
   "version": "1.0.0",
   "description": "Simple Websocket connectors",
+  "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
   "license": "ISC",
   "main": "index.js",
+  "types": "index",
   "directories": {
     "lib": "lib",
     "test": "tests"
@@ -22,7 +24,8 @@
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
   },
   "bugs": {
     "url": "https://github.com/TREEcg/connectors/issues"
