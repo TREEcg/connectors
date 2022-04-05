@@ -1,28 +1,44 @@
 import { Deserializer, EventStream, Handler, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamType, SimpleStream, Stream, StreamReader, StreamType } from "@connectors/types";
-import { ConsumerConfig, ConsumerSubscribeTopic, Kafka, KafkaConfig, KafkaMessage } from 'kafkajs';
+import { Consumer, ConsumerConfig, ConsumerSubscribeTopic, Kafka, KafkaConfig, KafkaMessage } from 'kafkajs';
 import { CConfig, CSTopic, KConfig } from "./Common";
 
 export class KafkaReader<T> {
     private readonly kafka: Kafka;
+    private readonly consumer: Consumer;
     private readonly handlers: { [K in keyof T]?: Handler<T[K]>[] } = {};
     private readonly deserializers: Deserializer<T>;
+    private readonly topic: string;
+
+    private readonly startPromise: Promise<void>;
 
     private readonly loop: Promise<void>;
 
     constructor(kafkaConfig: KConfig, consumerConfig: CConfig, subscribeConfig: CSTopic, deserializers: Deserializer<T>) {
         this.kafka = new Kafka(kafkaConfig);
         this.deserializers = deserializers;
+        this.topic = subscribeConfig.topic;
 
-        const consumer = this.kafka.consumer(consumerConfig);
+        const consumer = this.kafka.consumer(Object.assign({ maxWaitTimeInMs: 500, heartbeatInterval: 1000, retry: false }, consumerConfig));
 
-        consumer.connect();
+        this.startPromise = consumer.connect();
         consumer.subscribe(subscribeConfig);
+        this.consumer = consumer;
 
-        this.loop = consumer.run({ eachMessage: this.handleMessage.bind(this) })
+        this.loop = consumer.run({ autoCommit: true, autoCommitThreshold: 1, eachMessage: this.handleMessage.bind(this) })
+    }
+
+    public started(): Promise<void> {
+        return this.startPromise;
     }
 
     public runLoop(): Promise<void> {
         return this.loop;
+    }
+
+    public async stop(): Promise<void> {
+        await this.consumer.pause([{ topic: this.topic }]);
+        await this.consumer.disconnect();
+        await this.consumer.stop();
     }
 
     protected async handleMessage({ message }: { message: KafkaMessage }) {
@@ -36,7 +52,7 @@ export class KafkaReader<T> {
         }
     }
 
-    on<K extends keyof T>(key: K, handler: (item: T[K]) => Promise<void>) {
+    protected on<K extends keyof T>(key: K, handler: (item: T[K]) => Promise<void>) {
         const handlers = this.handlers[key] || (this.handlers[key] = []);
         handlers?.push(handler);
     }

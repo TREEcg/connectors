@@ -10,6 +10,8 @@ export class KafkaWriter<T> {
     private readonly producer: Producer;
     private readonly topic: string;
 
+    private readonly startPromise: Promise<void>;
+
     constructor(kakfaConfig: KConfig, serializer: Serializer<T>, topic: string) {
         this.kafka = new Kafka(kakfaConfig);
         this.serializer = serializer;
@@ -17,6 +19,10 @@ export class KafkaWriter<T> {
         this.producer = this.kafka.producer();
         this.connected = this.producer.connect();
         this.topic = topic;
+    }
+
+    public started(): Promise<void> {
+        return this.startPromise;
     }
 
     public async send<P extends keyof T>(field: P, value: T[P]) {
@@ -28,7 +34,10 @@ export class KafkaWriter<T> {
                 { key: field.toString(), value: ser }
             ]
         });
+    }
 
+    public async stop(): Promise<void> {
+        await this.producer.disconnect();
     }
 }
 
