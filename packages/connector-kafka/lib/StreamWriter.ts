@@ -1,5 +1,5 @@
-import { EventStream, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamType, LDESStreamWriter, Serializer, StreamType, StreamWriter } from '@connectors/types';
-import { ConsumerConfig, ConsumerSubscribeTopic, Kafka, KafkaConfig, KafkaMessage, Producer } from 'kafkajs';
+import { Serializer, StreamType, StreamWriter } from '@connectors/types';
+import { Kafka, Producer } from 'kafkajs';
 import { KConfig } from './Common';
 
 export class KafkaWriter<T> {
@@ -42,26 +42,12 @@ export class KafkaWriter<T> {
 }
 
 
-export class KafkaStreamWriter extends KafkaWriter<StreamType> implements StreamWriter {
-    push(item: IRecord): Promise<void> {
+export class KafkaStreamWriter<T, M> extends KafkaWriter<StreamType<T, M>> implements StreamWriter<T, M> {
+    push(item: T): Promise<void> {
         return super.send("data", item);
     }
 
-    pushMetadata(meta: IMetadata): Promise<void> {
-        return super.send("metadata", meta);
-    }
-}
-
-export class WSLDESStreamWriter extends KafkaWriter<LDESStreamType> implements LDESStreamWriter {
-    pushFragment(fragment: IFragmentInfo): Promise<void> {
-        return super.send("fragment", fragment);
-    }
-
-    push(item: IMember): Promise<void> {
-        return super.send("data", item);
-    }
-
-    pushMetadata(meta: EventStream): Promise<void> {
+    pushMetadata(meta: M): Promise<void> {
         return super.send("metadata", meta);
     }
 }

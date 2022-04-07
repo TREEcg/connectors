@@ -1,5 +1,5 @@
-import { Deserializer, EventStream, Handler, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamType, SimpleStream, Stream, StreamReader, StreamType } from "@connectors/types";
-import { Consumer, ConsumerConfig, ConsumerSubscribeTopic, Kafka, KafkaConfig, KafkaMessage } from 'kafkajs';
+import { Deserializer, Handler, SimpleStream, Stream, StreamReader, StreamType } from "@connectors/types";
+import { Consumer, Kafka, KafkaMessage } from 'kafkajs';
 import { CConfig, CSTopic, KConfig } from "./Common";
 
 export class KafkaReader<T> {
@@ -58,73 +58,34 @@ export class KafkaReader<T> {
     }
 }
 
-export class KafkaStreamReader extends KafkaReader<StreamType> implements StreamReader {
-    protected readonly dataStream: SimpleStream<IRecord> = new SimpleStream();
-    protected readonly metadataStream: SimpleStream<IMetadata> = new SimpleStream();
-    private current?: IRecord;
-    private currentMeta?: IMetadata;
+export class KafkaStreamReader<T, M> extends KafkaReader<StreamType<T, M>> implements StreamReader<T, M> {
+    protected readonly dataStream: SimpleStream<T> = new SimpleStream();
+    protected readonly metadataStream: SimpleStream<M> = new SimpleStream();
+    private current?: T;
+    private currentMeta?: M;
 
-    constructor(kafkaConfig: KConfig, consumerConfig: CConfig, subscribeConfig: CSTopic, deserializers: Deserializer<StreamType>) {
+    constructor(kafkaConfig: KConfig, consumerConfig: CConfig, subscribeConfig: CSTopic, deserializers: Deserializer<StreamType<T, M>>) {
         super(kafkaConfig, consumerConfig, subscribeConfig, deserializers);
 
         super.on("data", async (item) => this.dataStream.push(item));
         super.on("metadata", async (item) => this.metadataStream.push(item));
-        this.dataStream.on("data", async (r: IRecord) => { this.current = r; })
-        this.metadataStream.on("data", async (r: IMetadata) => { this.currentMeta = r; })
-    }
-
-    getStream(): Stream<IRecord> {
-        return this.dataStream;
-    }
-
-    getCurrent(): IRecord | undefined {
-        return this.current;
-    }
-
-    getMetadataStream(): Stream<IMetadata> {
-        return this.metadataStream;
-    }
-
-    getCurrentMetadata(): IMetadata | undefined {
-        return this.currentMeta;
-    }
-}
-
-
-export class KafkaLDESStreamReader extends KafkaReader<LDESStreamType> implements LDESStreamReader {
-    protected readonly dataStream: SimpleStream<IMember> = new SimpleStream();
-    protected readonly metadataStream: SimpleStream<EventStream> = new SimpleStream();
-    protected readonly fragmentStream: SimpleStream<IFragmentInfo> = new SimpleStream();
-    private current?: IMember;
-    private currentMeta?: EventStream;
-
-    constructor(kafkaConfig: KConfig, consumerConfig: CConfig, subscribeConfig: CSTopic, deserializers: Deserializer<LDESStreamType>) {
-        super(kafkaConfig, consumerConfig, subscribeConfig, deserializers);
-
-        super.on("data", async (item) => this.dataStream.push(item));
-        super.on("metadata", async (item) => this.metadataStream.push(item));
-        super.on("fragment", async (item) => this.fragmentStream.push(item));
         this.dataStream.on("data", async (r) => { this.current = r; })
         this.metadataStream.on("data", async (r) => { this.currentMeta = r; })
     }
 
-    getFragmentsStream(): Stream<IFragmentInfo> {
-        return this.fragmentStream;
-    }
-
-    getStream(): Stream<IMember> {
+    getStream(): Stream<T> {
         return this.dataStream;
     }
 
-    getCurrent(): IMember | undefined {
+    getCurrent(): T | undefined {
         return this.current;
     }
 
-    getMetadataStream(): Stream<EventStream> {
+    getMetadataStream(): Stream<M> {
         return this.metadataStream;
     }
 
-    getCurrentMetadata(): EventStream | undefined {
+    getCurrentMetadata(): M | undefined {
         return this.currentMeta;
     }
 }

@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { EventStream, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamType, LDESStreamWriter, Serializer, StreamType, StreamWriter } from "@connectors/types";
+import { IEventStreamMeta, IMember, IMetadata, IRecord, Serializer, StreamType, StreamWriter } from "@connectors/types";
 
 
 class WSClient<T> {
@@ -68,33 +68,15 @@ class WSClient<T> {
     }
 }
 
-export class WSStreamWriter extends WSClient<StreamType> implements StreamWriter {
-    constructor(url: string, serializer: Serializer<StreamType>) {
+export class WSStreamWriter<T, M> extends WSClient<StreamType<T, M>> implements StreamWriter<T, M> {
+    constructor(url: string, serializer: Serializer<StreamType<T, M>>) {
         super(url, serializer, "data");
     }
-    async push(item: IRecord): Promise<void> {
+    async push(item: T): Promise<void> {
         super.sendItem("data", item);
     }
 
-    async pushMetadata(meta: IMetadata): Promise<void> {
-        super.sendItem("metadata", meta);
-    }
-}
-
-export class WSLDESStreamWriter extends WSClient<LDESStreamType> implements LDESStreamWriter {
-    constructor(url: string, serializer: Serializer<LDESStreamType>) {
-        super(url, serializer, "data");
-    }
-
-    async pushFragment(fragment: IFragmentInfo): Promise<void> {
-        super.sendItem("fragment", fragment);
-    }
-
-    async push(item: IMember): Promise<void> {
-        super.sendItem("data", item);
-    }
-
-    async pushMetadata(meta: EventStream): Promise<void> {
+    async pushMetadata(meta: M): Promise<void> {
         super.sendItem("metadata", meta);
     }
 }

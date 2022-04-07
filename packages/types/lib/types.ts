@@ -1,6 +1,5 @@
 
-export interface StreamType { "data": IRecord, "metadata": IMetadata };
-export interface LDESStreamType { "data": IMember, "metadata": EventStream, "fragment": IFragmentInfo };
+export interface StreamType<R, M> { "data": R, "metadata": M };
 
 export interface IRecord { };
 
@@ -12,14 +11,9 @@ export interface IMetadata {
     licence?: string;
 };
 
-export interface EventStream extends IMetadata {
+export interface IEventStreamMeta extends IMetadata {
     view: any;
 }
-
-export interface IFragmentInfo {
-    id: any;
-}
-
 
 export interface Stream<T> {
     on(event: "data", listener: (t: T) => Promise<void>): this;
@@ -54,35 +48,40 @@ export class SimpleStream<T> implements Stream<T> {
 }
 
 
+export interface StreamReader<T, M> {
+    getStream(): Stream<T>;
+    getCurrent(): T | undefined;
 
-export interface StreamReader {
-    getStream(): Stream<IRecord>;
-    getCurrent(): IRecord | undefined;
-
-    getMetadataStream(): Stream<IMetadata>;
-    getCurrentMetadata(): IMetadata | undefined;
+    getMetadataStream(): Stream<M>;
+    getCurrentMetadata(): M | undefined;
 }
 
-export interface LDESStreamReader extends StreamReader {
-    getStream(): Stream<IMember>;
-    getCurrent(): IMember | undefined;
+export interface RecordStream<M> extends StreamReader<IRecord, M> {
+}
 
-    getFragmentsStream(): Stream<IFragmentInfo>;
-    getMetadataStream(): Stream<EventStream>;
+export interface MemberStream<M> extends StreamReader<IMember, M> {
+}
 
-    getCurrentMetadata(): EventStream | undefined;
+export interface LDESStreamReader extends MemberStream<IEventStreamMeta> {
 
 }
 
-export interface StreamWriter {
-    push(item: IRecord): Promise<void>;
-    pushMetadata(meta: IMetadata): Promise<void>;
+
+export interface StreamWriter<T, M> {
+    push(item: T): Promise<void>;
+    pushMetadata(meta: M): Promise<void>;
 }
 
-export interface LDESStreamWriter extends StreamWriter {
-    pushFragment(fragment: IFragmentInfo): Promise<void>;
+export interface RecordWriter<M> extends StreamWriter<IRecord, M> {
+
 }
 
+export interface MemberWriter<M> extends StreamWriter<IMember, M> {
+
+}
+export interface LDESWriter extends  MemberWriter<IEventStreamMeta> {
+
+}
 
 export type Serializer<T> = { [P in keyof T]: (item: T[P]) => any }
 export type Deserializer<T> = { [P in keyof T]: (item: any) => T[P] }  

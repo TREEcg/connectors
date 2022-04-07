@@ -1,5 +1,5 @@
-import { Deserializer, EventStream, Handler, IFragmentInfo, IMember, IMetadata, IRecord, LDESStreamReader, LDESStreamType, LDESStreamWriter, SimpleStream, Stream, StreamReader, StreamType } from "@connectors/types";
-import { Event, RawData, WebSocket, WebSocketServer } from 'ws';
+import { Deserializer, Handler, SimpleStream, Stream, StreamReader, StreamType } from "@connectors/types";
+import { RawData, WebSocket, WebSocketServer } from 'ws';
 
 
 type WsInstance<T> = {
@@ -87,73 +87,34 @@ class WSServer<T> {
     }
 }
 
-export class WSStreamReader extends WSServer<StreamType> implements StreamReader {
-    private readonly dataStream: SimpleStream<IRecord> = new SimpleStream();
-    private readonly metadataStream: SimpleStream<IMetadata> = new SimpleStream();
-    private current?: IRecord;
-    private currentMeta?: IMetadata;
+export class WSStreamReader<T, M> extends WSServer<StreamType<T, M>> implements StreamReader<T, M> {
+    private readonly dataStream: SimpleStream<T> = new SimpleStream();
+    private readonly metadataStream: SimpleStream<M> = new SimpleStream();
+    private current?: T;
+    private currentMeta?: M;
 
-    constructor(port: number, deserializers: Deserializer<StreamType>) {
+    constructor(port: number, deserializers: Deserializer<StreamType<T, M>>) {
         super(port, deserializers);
-        this.dataStream.on("data", async (r: IRecord) => { this.current = r; })
-        this.metadataStream.on("data", async (r: IMetadata) => { this.currentMeta = r; })
+        this.dataStream.on("data", async (r) => { this.current = r; })
+        this.metadataStream.on("data", async (r) => { this.currentMeta = r; })
 
         super.on("data", async (i) => this.dataStream.push(i))
         super.on("metadata", async (i) => this.metadataStream.push(i))
     }
 
-    getStream(): Stream<IRecord> {
+    getStream(): Stream<T> {
         return this.dataStream;
     }
 
-    getCurrent(): IRecord | undefined {
+    getCurrent(): T | undefined {
         return this.current;
     }
 
-    getMetadataStream(): Stream<IMetadata> {
+    getMetadataStream(): Stream<M> {
         return this.metadataStream;
     }
 
-    getCurrentMetadata(): IMetadata | undefined {
+    getCurrentMetadata(): M | undefined {
         return this.currentMeta;
     }
-}
-
-export class WSLDESStreamReader extends WSServer<LDESStreamType> implements LDESStreamReader {
-    private readonly dataStream: SimpleStream<IMember> = new SimpleStream();
-    private readonly metadataStream: SimpleStream<EventStream> = new SimpleStream();
-    private readonly fragmentStream: SimpleStream<IFragmentInfo> = new SimpleStream();
-    private current?: IMember;
-    private currentMeta?: EventStream;
-
-    constructor(port: number, deserializers: Deserializer<LDESStreamType>) {
-        super(port, deserializers);
-        this.dataStream.on("data", async (r: IMember) => { this.current = r; })
-        this.metadataStream.on("data", async (r: EventStream) => { this.currentMeta = r; })
-
-        super.on("data", async (i) => this.dataStream.push(i));
-        super.on("metadata", async (i) => this.metadataStream.push(i));
-        super.on("fragment", async (i) => this.fragmentStream.push(i));
-    }
-
-    getFragmentsStream(): Stream<IFragmentInfo> {
-        return this.fragmentStream;
-    }
-
-    getStream(): Stream<IMember> {
-        return this.dataStream;
-    }
-
-    getCurrent(): IMember | undefined {
-        return this.current;
-    }
-
-    getMetadataStream(): Stream<EventStream> {
-        return this.metadataStream;
-    }
-
-    getCurrentMetadata(): EventStream | undefined {
-        return this.currentMeta;
-    }
-
 }
