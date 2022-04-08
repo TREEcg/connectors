@@ -1,0 +1,6 @@
+[
+    "IEventStreamArgs",
+    "LDESClient",
+    "Deserializer",
+    "Serializer"
+]

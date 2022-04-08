@@ -18,7 +18,7 @@ export class KafkaReader<T> {
         this.deserializers = deserializers;
         this.topic = subscribeConfig.topic;
 
-        const consumer = this.kafka.consumer(Object.assign({ maxWaitTimeInMs: 500, heartbeatInterval: 1000, retry: false }, consumerConfig));
+        const consumer = this.kafka.consumer(Object.assign({ maxWaitTimeInMs: 500, heartbeatInterval: 1000, retry: { retries: 0 } }, consumerConfig));
 
         this.startPromise = consumer.connect();
         consumer.subscribe(subscribeConfig);
