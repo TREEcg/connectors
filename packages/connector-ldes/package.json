@@ -30,7 +30,7 @@
     "test": "jest",
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i .componentsignore.json -r cldes "
+    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i .componentsignore.json -r cldes --typeScopedContexts"
   },
   "dependencies": {
     "@connectors/types": "^1.0.0",

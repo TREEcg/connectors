@@ -7,14 +7,8 @@ export class LDESStreamReader implements StreamReader<IMember, IEventStreamMeta>
     private current?: IMember;
     private currentMeta?: IEventStreamMeta;
 
-    /**
-     * 
-     * @param client  - @ignored
-     * @param _init 
-     * @param url 
-     */
     constructor(client: LDESClient, _init: any, url: string) {
-        const stream = client.createReadStream(url, {})
+        const stream = client.createReadStream(url, { representation: "Quads" })
 
         stream.on("data", member => {
             this.current = member;

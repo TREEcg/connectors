@@ -20,6 +20,7 @@
   ],
   "repository": {
     "type": "git",
+    "directory": "packages/connector-ws",
     "url": "git+https://github.com/TREEcg/connectors.git"
   },
   "scripts": {

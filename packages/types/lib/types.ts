@@ -56,31 +56,9 @@ export interface StreamReader<T, M> {
     getCurrentMetadata(): M | undefined;
 }
 
-export interface RecordStream<M> extends StreamReader<IRecord, M> {
-}
-
-export interface MemberStream<M> extends StreamReader<IMember, M> {
-}
-
-export interface LDESStreamReader extends MemberStream<IEventStreamMeta> {
-
-}
-
-
 export interface StreamWriter<T, M> {
     push(item: T): Promise<void>;
     pushMetadata(meta: M): Promise<void>;
-}
-
-export interface RecordWriter<M> extends StreamWriter<IRecord, M> {
-
-}
-
-export interface MemberWriter<M> extends StreamWriter<IMember, M> {
-
-}
-export interface LDESWriter extends  MemberWriter<IEventStreamMeta> {
-
 }
 
 export type Serializer<T> = { [P in keyof T]: (item: T[P]) => any }
