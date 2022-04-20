@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-ws",
-  "version": "1.0.4-alpha.0",
+  "version": "1.0.5-alpha.0",
   "description": "Simple Websocket connectors",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",

@@ -1,6 +1,6 @@
 {
   "name": "@treecg/types",
-  "version": "1.0.4-alpha.0",
+  "version": "1.0.5-alpha.0",
   "description": "Types joning all connectors",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",

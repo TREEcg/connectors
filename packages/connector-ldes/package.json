@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-ldes",
-  "version": "1.0.4-alpha.0",
+  "version": "1.0.5-alpha.0",
   "description": "StreamReader for LDES",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
