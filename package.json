@@ -17,6 +17,9 @@
     "lerna": "lerna",
     "watch": "tsc && tsc -w"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "jest": {
     "globals": {
       "ts-jest": {
