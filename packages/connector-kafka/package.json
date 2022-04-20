@@ -1,6 +1,6 @@
 {
-  "name": "@connectors/kafka",
-  "version": "1.0.0",
+  "name": "@treecg/connector-kafka",
+  "version": "1.0.4-alpha.0",
   "description": "Simple Kafka connector",
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
@@ -33,7 +33,8 @@
     "url": "https://github.com/TREEcg/connectors/issues"
   },
   "dependencies": {
-    "@connectors/types": "^1.0.0",
+    "@connectors/types": "^1.0.4-alpha.0",
     "kafkajs": "^1.16.0"
-  }
+  },
+  "gitHead": "96160f536c5624c7175a589e1dc324664c1db662"
 }

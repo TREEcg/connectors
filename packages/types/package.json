@@ -1,6 +1,6 @@
 {
-  "name": "@connectors/types",
-  "version": "1.0.0",
+  "name": "@treecg/types",
+  "version": "1.0.4-alpha.0",
   "description": "Types joning all connectors",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
@@ -23,12 +23,20 @@
     "directory": "packages/types",
     "url": "git+https://github.com/TREEcg/connectors.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r ctypes --typeScopedContexts"
+    "build:ts": "node node_modules/typescript/bin/tsc",
+    "build:components": "node node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r ctypes --typeScopedContexts"
   },
   "bugs": {
     "url": "https://github.com/TREEcg/connectors/issues"
+  },
+  "gitHead": "96160f536c5624c7175a589e1dc324664c1db662",
+  "devDependencies": {
+    "componentsjs-generator": "^3.0.2",
+    "typescript": "^4.6.3"
   }
 }

@@ -1,6 +1,5 @@
 {
   "name": "ldes-connectors",
-  "private": true,
   "repository": "https://github.com/TREEcg/connectors",
   "scripts": {
     "build-changed": "lerna run build --since HEAD",
