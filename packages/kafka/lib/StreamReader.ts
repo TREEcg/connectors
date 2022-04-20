@@ -1,4 +1,5 @@
 import { Deserializer, Handler, SimpleStream, Stream, StreamReader, StreamType } from "@connectors/types";
+import { readFileSync } from "fs";
 import { Consumer, Kafka, KafkaMessage } from 'kafkajs';
 import { CConfig, CSTopic, KConfig } from "./Common";
 
@@ -13,8 +14,14 @@ export class KafkaReader<T> {
 
     private readonly loop: Promise<void>;
 
-    constructor(kafkaConfig: KConfig, consumerConfig: CConfig, subscribeConfig: CSTopic, deserializers: Deserializer<T>) {
-        this.kafka = new Kafka(kafkaConfig);
+    constructor(kafkaConfig: KConfig | string, consumerConfig: CConfig, subscribeConfig: CSTopic, deserializers: Deserializer<T>) {
+        if (typeof kafkaConfig === "string" || kafkaConfig instanceof String) {
+            const config = readFileSync(<string>kafkaConfig, "utf-8");
+            this.kafka = new Kafka(JSON.parse(config));
+        } else {
+            this.kafka = new Kafka(kafkaConfig);
+        }
+
         this.deserializers = deserializers;
         this.topic = subscribeConfig.topic;
 
@@ -64,7 +71,7 @@ export class KafkaStreamReader<T, M> extends KafkaReader<StreamType<T, M>> imple
     private current?: T;
     private currentMeta?: M;
 
-    constructor(kafkaConfig: KConfig, consumerConfig: CConfig, subscribeConfig: CSTopic, deserializers: Deserializer<StreamType<T, M>>) {
+    constructor(kafkaConfig: KConfig | string, consumerConfig: CConfig, subscribeConfig: CSTopic, deserializers: Deserializer<StreamType<T, M>>) {
         super(kafkaConfig, consumerConfig, subscribeConfig, deserializers);
 
         super.on("data", async (item) => this.dataStream.push(item));

@@ -1,6 +1,13 @@
+export interface SASLOptions {
+    mechanism: "plain",
+    username: string,
+    password: string,
+}
 
 export interface KConfig {
     brokers: string[],
+    ssl?: boolean,
+    sasl?: SASLOptions,
     clientId: string,
 }
 
