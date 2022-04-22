@@ -1,6 +1,6 @@
-import { Deserializer, Handler, SimpleStream, Stream, StreamReader, StreamType } from "@connectors/types";
-import { readFileSync } from "fs";
+import { Deserializer, Handler, SimpleStream, Stream, StreamReader, StreamType } from "@treecg/connector-types";
 import { Consumer, Kafka, KafkaMessage } from 'kafkajs';
+import { readFileSync } from "node:fs";
 import { CConfig, CSTopic, KConfig } from "./Common";
 
 export class KafkaReader<T> {

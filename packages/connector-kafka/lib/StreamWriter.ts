@@ -1,4 +1,4 @@
-import { Serializer, StreamType, StreamWriter } from '@connectors/types';
+import { Serializer, StreamType, StreamWriter } from '@treecg/connector-types';
 import { Kafka, Producer } from 'kafkajs';
 import { KConfig } from './Common';
 

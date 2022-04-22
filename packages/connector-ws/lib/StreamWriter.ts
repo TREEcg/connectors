@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { IEventStreamMeta, IMember, IMetadata, IRecord, Serializer, StreamType, StreamWriter } from "@connectors/types";
+import { IEventStreamMeta, IMember, IMetadata, IRecord, Serializer, StreamType, StreamWriter } from "@treecg/connector-types";
 
 
 class WSClient<T> {

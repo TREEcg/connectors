@@ -1,4 +1,4 @@
-import { IEventStreamMeta, IMember, SimpleStream, Stream, StreamReader } from "@connectors/types";
+import { IEventStreamMeta, IMember, SimpleStream, Stream, StreamReader } from "@treecg/connector-types";
 import { LDESClient } from "@treecg/actor-init-ldes-client";
 
 export class LDESStreamReader implements StreamReader<IMember, IEventStreamMeta> {

@@ -1,4 +1,4 @@
-import { Deserializer, Handler, SimpleStream, Stream, StreamReader, StreamType } from "@connectors/types";
+import { Deserializer, Handler, SimpleStream, Stream, StreamReader, StreamType } from "@treecg/connector-types";
 import { RawData, WebSocket, WebSocketServer } from 'ws';
 
 

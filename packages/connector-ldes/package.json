@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-ldes",
-  "version": "1.0.4-alpha.0",
+  "version": "1.0.5",
   "description": "StreamReader for LDES",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
@@ -13,6 +13,8 @@
     "test": "tests"
   },
   "files": [
+    "config",
+    "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "index.d.ts",
@@ -36,10 +38,10 @@
     "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r cldes --typeScopedContexts"
   },
   "dependencies": {
+    "@treecg/connector-types": "^1.0.3",
     "@comunica/bus-init": "=1.20.0",
     "@comunica/bus-rdf-metadata-extract": "1.21.1",
     "@comunica/core": "1.21.1",
-    "@connectors/types": "^1.0.4-alpha.0",
     "@treecg/actor-init-ldes-client": "^2.5.8",
     "@treecg/actor-rdf-filter-object-with-framing": "^2.3.6",
     "@treecg/actor-rdf-filter-objects-with-quadstore": "^2.3.6",

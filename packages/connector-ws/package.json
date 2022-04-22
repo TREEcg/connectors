@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-ws",
-  "version": "1.0.4-alpha.0",
+  "version": "1.0.4",
   "description": "Simple Websocket connectors",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
@@ -13,6 +13,7 @@
     "test": "tests"
   },
   "files": [
+    "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "index.d.ts",
@@ -33,11 +34,10 @@
     "url": "https://github.com/TREEcg/connectors/issues"
   },
   "dependencies": {
-    "@connectors/types": "^1.0.4-alpha.0",
+    "@treecg/connector-types": "^1.0.3",
     "ws": "^8.5.0"
   },
   "devDependencies": {
     "@types/ws": "^8.5.3"
-  },
-  "gitHead": "96160f536c5624c7175a589e1dc324664c1db662"
+  }
 }
