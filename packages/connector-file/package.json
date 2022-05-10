@@ -1,0 +1,39 @@
+{
+  "name": "@treecg/connector-file",
+  "version": "1.0.0",
+  "description": "File connectors, allowing data to flow through a file (on append or on replace)",
+  "author": "ajuvercr <arthur.vercruysse@ugent.be>",
+  "homepage": "https://github.com/TREEcg/connectors#readme",
+  "lsd:module": true,
+  "license": "ISC",
+  "main": "index.js",
+  "types": "index",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "directory": "packages/connector-all",
+    "url": "git+https://github.com/TREEcg/connectors.git"
+  },
+  "scripts": {
+    "test": "jest --detectOpenHandles",
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r cfile --typeScopedContexts"
+  },
+  "bugs": {
+    "url": "https://github.com/TREEcg/connectors/issues"
+  },
+  "dependencies": {
+    "@treecg/connector-types": "^1.1.1"
+  }
+}
