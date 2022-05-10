@@ -4,6 +4,7 @@ Connector that communicates via a filesystem.
 
 ## Options
 
+- `type`: type of the connector created, to use this connector "file" is required
 - `path`: required parameter denoting the path of the file used for communication
 - `onReplace`: required parameter denoting how the file is used to communicate, possible values:
     - `true`: the entire file is read parsed and sent on change

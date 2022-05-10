@@ -2,9 +2,9 @@
 import { SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
 import { createReadStream } from 'fs';
 import { open, readFile, stat, watch } from "fs/promises";
+import { FileConnectorType } from "..";
 
 export interface FileReaderConfig {
-    type: "file",
     path: string,
     onReplace: boolean,
     readFirstContent?: boolean,
@@ -45,12 +45,13 @@ export async function startFileStreamReader<T>(
     const out = new SimpleStream<T>(async () => ac.abort());
 
 
-    if (config.onReplace && config.readFirstContent) {
-        const content = await readFile(config.path, { encoding });
-        out.push(des(content));
-    }
-
     (async () => {
+        if (config.onReplace && config.readFirstContent) {
+            console.log("reading first content")
+            const content = await readFile(config.path, { encoding });
+            out.push(des(content));
+        }
+
         try {
             const watcher = watch(config.path, { signal });
             for await (const event of watcher) {
@@ -86,7 +87,7 @@ export async function startFileStreamReader<T>(
 
 
 export class FileStreamReaderFactory implements StreamReaderFactory<FileReaderConfig> {
-    public readonly type = "file";
+    public readonly type = FileConnectorType;
 
     build<T>(config: FileReaderConfig, deserializer?: (message: string) => T): Promise<Stream<T>> {
         return startFileStreamReader(config, deserializer);

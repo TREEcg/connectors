@@ -1,8 +1,8 @@
 import { StreamWriterFactory, Writer } from "@treecg/connector-types";
 import { WebSocket } from "ws";
+import { WSConnectorType } from "..";
 
 export interface WsWriterConfig {
-    type: "ws",
     url: string,
 }
 
@@ -30,7 +30,7 @@ export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?
 }
 
 export class WsStreamWriterFactory implements StreamWriterFactory<WsWriterConfig> {
-    public readonly type = "ws";
+    public readonly type = WSConnectorType;
 
     build<T>(config: WsWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
         return startWsStreamWriter(config, serializer);

@@ -4,11 +4,23 @@ Connector that used kafka to communicate messages.
 
 ## Options
 
-- `type`: type of the connector created, to use this connector "file" is required
-- `topic`: required parameters denoting the used kafka topic 
-- `consumerConfig`: required parameter, the value is a json object as described at section consumerConfig
-- `kafkaConfig`: required parameter, the value is either a string denoting the location of the config as described at section kafkaConfig, or a json object as described at section kafkaConfig
-- `fromBeginning`: optional parameter. If set, the stream reader reads all messages from the kafka topic, not just new messages (default value is false)
+- `topic`: required parameter, the value is a json object as described at section [Topic Config](topic-config)
+- `consumer`: required parameter, the value is a json object as described at section [Consumer Config](consumer-config)
+- `producer`: required parameter, the value is a json object as described at section [Producer Config](producer-config)
+- `broker`: required parameter, the value is either a string denoting the location of the config as described at section [Broker Config](broker-config), or a json object as described at section [Broker Config](broker-config)
+
+
+### Topic Config
+
+- `name`: the name of the topic
+- `fromBeginning`: optional, relevant for reader only. If set the reader will read all items on the kafka topic, not just the newly generated items.
+
+
+### Producer Config
+
+No required parameters
+
+For more information see [KafkaJs](https://kafka.js.org/).
 
 
 ### Consumer Config
@@ -22,9 +34,9 @@ metadataMaxAge, sessionTimeout, rebalanceTimeout, heartbeatInterval, maxBytesPer
 For more information see [KafkaJs](https://kafka.js.org/).
 
 
-### Kafka Config
+### Broker Config
 
-- `brokers`: list of strings denoting the brokers or bootstrap servers.
+- `hosts`: list of strings denoting the brokers or bootstrap servers.
 - `clientId`: id used to connect to kafka
 
 Other optional kafka parameters

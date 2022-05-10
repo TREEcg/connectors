@@ -1,28 +1,32 @@
 import { StreamWriterFactory, Writer } from '@treecg/connector-types';
-import { Kafka } from 'kafkajs';
+import { Kafka, KafkaConfig, ProducerConfig } from 'kafkajs';
 import { readFileSync } from 'node:fs';
-import { KConfig } from './Common';
+import { BrokerConfig } from './Common';
 
 export interface KafkaWriterConfig {
-    type: "kafka",
     topic: {
-        topic: string,
+        name: string,
     },
-    kafkaConfig: KConfig | string,
+    producer: ProducerConfig,
+    broker: BrokerConfig | string,
 }
 
 
 export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
     const ser = serializer || JSON.stringify;
-    const topic = config.topic.topic;
+    const topic = config.topic.name;
 
-    if (typeof config.kafkaConfig === "string" || config.kafkaConfig instanceof String) {
-        config.kafkaConfig = JSON.parse(readFileSync(<string>config.kafkaConfig, "utf-8"));
+    const brokerConfig: any = {};
+    if (typeof config.broker === "string" || config.broker instanceof String) {
+        Object.assign(brokerConfig, JSON.parse(readFileSync(<string>config.broker, "utf-8")));
+    } else {
+        Object.assign(brokerConfig, config.broker);
     }
+    brokerConfig.brokers = brokerConfig.hosts;
 
-    const kafka = new Kafka(<KConfig>config.kafkaConfig);
+    const kafka = new Kafka(<KafkaConfig>brokerConfig);
 
-    const producer = kafka.producer();
+    const producer = kafka.producer(config.producer);
     await producer.connect();
 
     const push = async (item: T) => {

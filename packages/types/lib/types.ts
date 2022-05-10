@@ -1,6 +1,4 @@
-import { config } from "process";
-
-export type Configs<T, C extends Typed> = { [P in keyof T]: C };
+export type Configs<T, C> = { [P in keyof T]: Typed<C> };
 export type Deserializers<T> = { [P in keyof T]?: (member: string) => T[P] };
 export type Serializers<T> = { [P in keyof T]?: (item: T[P]) => string };
 
@@ -17,29 +15,30 @@ export interface Stream<T> {
     on(event: "end", listener: () => PromiseLike<void> | void): this;
 }
 
-export interface Typed {
+export interface Typed<C> {
     type: string;
+    config: C;
 };
 
-export interface StreamReaderFactory<C extends Typed> {
+export interface StreamReaderFactory<C> {
     type: string;
     build<T>(config: C, deserializer?: (message: string) => T): Promise<Stream<T>>;
 }
 
-export interface StreamWriterFactory<C extends Typed> {
+export interface StreamWriterFactory<C> {
     type: string;
     build<T>(config: C, serializer?: (item: T) => string): Promise<Writer<T>>;
 }
 
 
-export class ReaderFactoryBuilder<Cs extends Typed> {
+export class ReaderFactoryBuilder<Cs> {
     private readonly inner: StreamReaderFactory<Cs>[];
 
     public constructor(inner: StreamReaderFactory<Cs>[]) {
         this.inner = inner;
     }
 
-    add<C extends Typed>(factory: StreamReaderFactory<C>): ReaderFactoryBuilder<Cs | C> {
+    add<C>(factory: StreamReaderFactory<C>): ReaderFactoryBuilder<Cs | C> {
         const nInner = <StreamReaderFactory<Cs | C>[]>this.inner;
         nInner.push(factory);
         return new ReaderFactoryBuilder(nInner);
@@ -50,14 +49,14 @@ export class ReaderFactoryBuilder<Cs extends Typed> {
     }
 }
 
-export class WriterFactoryBuilder<Cs extends Typed> {
+export class WriterFactoryBuilder<Cs> {
     private readonly inner: StreamWriterFactory<Cs>[];
 
     public constructor(inner: StreamWriterFactory<Cs>[]) {
         this.inner = inner;
     }
 
-    add<C extends Typed>(factory: StreamWriterFactory<C>): WriterFactoryBuilder<Cs | C> {
+    add<C>(factory: StreamWriterFactory<C>): WriterFactoryBuilder<Cs | C> {
         const nInner = <StreamWriterFactory<Cs | C>[]>this.inner.slice();
         nInner.push(factory);
 
@@ -70,17 +69,17 @@ export class WriterFactoryBuilder<Cs extends Typed> {
 }
 
 
-export class ReaderFactory<C extends Typed> {
+export class ReaderFactory<C> {
     private readonly factories: StreamReaderFactory<C>[];
 
     constructor(factories: StreamReaderFactory<C>[]) {
         this.factories = factories;
     }
 
-    async build<T>(config: C, deserializer?: (message: string) => T): Promise<Stream<T>> {
+    async build<T>(config: Typed<C>, deserializer?: (message: string) => T): Promise<Stream<T>> {
         for (let factory of this.factories) {
             if (factory.type.toLocaleLowerCase() === config.type.toLocaleLowerCase()) {
-                return factory.build(config, deserializer);
+                return factory.build(config.config, deserializer);
             }
         }
 
@@ -91,7 +90,7 @@ export class ReaderFactory<C extends Typed> {
         const streams: { [P in keyof T]?: Stream<T[P]> } = {};
 
         await Promise.all(
-            Object.entries(configs).map(async ([key, value]: [string, C]) => {
+            Object.entries(configs).map(async ([key, value]: [string, Typed<C>]) => {
                 streams[<keyof T>key] = await this.build(value, deserializers[<keyof T>key]);
             })
         )
@@ -100,17 +99,17 @@ export class ReaderFactory<C extends Typed> {
     }
 }
 
-export class WriterFactory<C extends Typed> {
+export class WriterFactory<C> {
     private readonly factories: StreamWriterFactory<C>[];
 
     constructor(factories: StreamWriterFactory<C>[]) {
         this.factories = factories;
     }
 
-    async build<T>(config: C, serializer?: (item: T) => string): Promise<Writer<T>> {
+    async build<T>(config: Typed<C>, serializer?: (item: T) => string): Promise<Writer<T>> {
         for (let factory of this.factories) {
             if (factory.type.toLocaleLowerCase() === config.type.toLowerCase()) {
-                return factory.build(config, serializer);
+                return factory.build(config.config, serializer);
             }
         }
 
@@ -121,7 +120,7 @@ export class WriterFactory<C extends Typed> {
         const streams: { [P in keyof T]?: Writer<T[P]> } = {};
 
         await Promise.all(
-            Object.entries(configs).map(async ([key, value]: [string, C]) => {
+            Object.entries(configs).map(async ([key, value]: [string, Typed<C>]) => {
                 streams[<keyof T>key] = await this.build(value, serializers[<keyof T>key]);
             })
         )

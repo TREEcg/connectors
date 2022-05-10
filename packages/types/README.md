@@ -11,9 +11,9 @@ async function main() {
         type: "foo",
         build: (config: {}, deserializer?: (item: string) => any) => { throw "Not Implemented" }
     };
-    const factory = factoryBuilder.add(fooStreamReaderFactory).build();
+    const factory: ReaderFactory<{}> = factoryBuilder.add(fooStreamReaderFactory).build();
 
-    const stream = await factory.build({ type: "foo" })
+    const stream = await factory.build({ type: "foo", config: {} })
     stream.data(console.log);
 
     // Idem with WriterFactory(Builder)

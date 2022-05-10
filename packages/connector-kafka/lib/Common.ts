@@ -4,14 +4,13 @@ export interface SASLOptions {
     password: string,
 }
 
-export interface KConfig {
-    brokers: string[],
-    clientId: string,
+export interface BrokerConfig {
+    hosts: string[],
     ssl?: boolean,
     sasl?: SASLOptions,
 }
 
-export interface CConfig {
+export interface ConsumerConfig {
     groupId: string
     metadataMaxAge?: number
     sessionTimeout?: number

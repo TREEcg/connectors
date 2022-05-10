@@ -1,7 +1,10 @@
 [
     "IEventStreamArgs",
     "LDESClient",
-    "Deserializer",
-    "Serializer",
+    "Quad",
+    "Configs",
+    "Deserializers",
+    "LDESItem",
+    "SimpleStream",
     "SASLOptions"
 ]

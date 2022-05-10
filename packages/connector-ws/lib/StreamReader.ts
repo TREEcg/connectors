@@ -1,8 +1,8 @@
 import { SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
 import { RawData, WebSocket, WebSocketServer } from 'ws';
+import { WSConnectorType } from "..";
 
 export interface WsReaderConfig {
-    type: "ws",
     host: string,
     port: number,
 }
@@ -54,7 +54,7 @@ export async function startWsStreamReader<T>(config: WsReaderConfig, deserialize
 
 
 export class WsStreamReaderFactory implements StreamReaderFactory<WsReaderConfig> {
-    public readonly type = "ws";
+    public readonly type = WSConnectorType;
 
     build<T>(config: WsReaderConfig, deserializer?: (message: string) => T): Promise<Stream<T>> {
         return startWsStreamReader(config, deserializer);

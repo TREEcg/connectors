@@ -9,7 +9,6 @@ export interface Quad extends RDF.Quad {
 type LDESItem = { "type": "data" | "metadata", "data": Quad[] };
 
 export interface LDESReaderConfig {
-    type: "ldes",
     client: LDESClient,
     _init: any,
     url: string,
@@ -39,7 +38,7 @@ export async function startLDESStreamReader(config: LDESReaderConfig): Promise<S
 export class StreamReader {
     private readonly config: LDESReaderConfig;
     constructor(client: LDESClient, _init: any, url: string) {
-        this.config = { type: "ldes", client, _init, url };
+        this.config = { client, _init, url };
     }
 
     stream(): Promise<Stream<LDESItem>> {
