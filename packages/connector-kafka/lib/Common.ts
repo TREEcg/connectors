@@ -6,9 +6,9 @@ export interface SASLOptions {
 
 export interface KConfig {
     brokers: string[],
+    clientId: string,
     ssl?: boolean,
     sasl?: SASLOptions,
-    clientId: string,
 }
 
 export interface CConfig {

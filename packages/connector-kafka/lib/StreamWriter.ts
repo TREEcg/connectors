@@ -1,55 +1,48 @@
-import { Serializer, StreamType, StreamWriter } from '@treecg/connector-types';
-import { Kafka, Producer } from 'kafkajs';
+import { StreamWriterFactory, Writer } from '@treecg/connector-types';
+import { Kafka } from 'kafkajs';
+import { readFileSync } from 'node:fs';
 import { KConfig } from './Common';
 
-type TopicMap<T> = { [P in keyof T]: string };
-export class KafkaWriter<T> {
-    private readonly serializer: Serializer<T>;
-    private readonly kafka: Kafka;
-
-    private readonly connected: Promise<void>;
-    private readonly producer: Producer;
-    private readonly topicMap: TopicMap<T>;
-
-    private readonly startPromise: Promise<void>;
-
-    constructor(kakfaConfig: KConfig, topicMap: TopicMap<T>, serializer: Serializer<T>) {
-        this.kafka = new Kafka(kakfaConfig);
-        this.serializer = serializer;
-
-        this.producer = this.kafka.producer();
-        this.connected = this.producer.connect();
-        this.topicMap = topicMap;
-    }
-
-    public started(): Promise<void> {
-        return this.startPromise;
-    }
-
-    public async send<P extends keyof T>(field: P, value: T[P]) {
-        const ser = this.serializer[field](value);
-        const topic = this.topicMap[field];
-        await this.connected;
-
-        await this.producer.send({
-            topic: topic, messages: [
-                { value: ser }
-            ]
-        });
-    }
-
-    public async stop(): Promise<void> {
-        await this.producer.disconnect();
-    }
+export interface KafkaWriterConfig {
+    type: "kafka",
+    topic: {
+        topic: string,
+    },
+    kafkaConfig: KConfig | string,
 }
 
 
-export class KafkaStreamWriter<T, M> extends KafkaWriter<StreamType<T, M>> implements StreamWriter<T, M> {
-    push(item: T): Promise<void> {
-        return super.send("data", item);
+export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+    const ser = serializer || JSON.stringify;
+    const topic = config.topic.topic;
+
+    if (typeof config.kafkaConfig === "string" || config.kafkaConfig instanceof String) {
+        config.kafkaConfig = JSON.parse(readFileSync(<string>config.kafkaConfig, "utf-8"));
     }
 
-    pushMetadata(meta: M): Promise<void> {
-        return super.send("metadata", meta);
+    const kafka = new Kafka(<KConfig>config.kafkaConfig);
+
+    const producer = kafka.producer();
+    await producer.connect();
+
+    const push = async (item: T) => {
+        const mes = ser(item);
+        await producer.send(
+            { topic, messages: [{ value: mes }] }
+        );
+    };
+
+    const disconnect = async () => {
+        await producer.disconnect();
+    };
+
+    return { push, disconnect };
+}
+
+export class KafkaStreamWriterFactory implements StreamWriterFactory<KafkaWriterConfig> {
+    public readonly type = "kafka";
+
+    build<T>(config: KafkaWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+        return startKafkaStreamWriter(config, serializer);
     }
 }
