@@ -1,44 +1,48 @@
-import { IEventStreamMeta, IMember, SimpleStream, Stream, StreamReader } from "@treecg/connector-types";
+import * as RDF from "@rdfjs/types";
 import { LDESClient } from "@treecg/actor-init-ldes-client";
+import { SimpleStream, Stream } from "@treecg/connector-types";
 
-export class LDESStreamReader implements StreamReader<IMember, IEventStreamMeta> {
-    private readonly dataStream: SimpleStream<IMember> = new SimpleStream();
-    private readonly metadataStream: SimpleStream<IEventStreamMeta> = new SimpleStream();
-    private current?: IMember;
-    private currentMeta?: IEventStreamMeta;
+export interface Quad extends RDF.Quad {
 
+}
+
+type LDESItem = { "type": "data" | "metadata", "data": Quad[] };
+
+export interface LDESReaderConfig {
+    type: "ldes",
+    client: LDESClient,
+    _init: any,
+    url: string,
+}
+
+export async function startLDESStreamReader(config: LDESReaderConfig): Promise<Stream<LDESItem>> {
+    const stream = config.client.createReadStream(config.url, { representation: "Quads" })
+    const out = new SimpleStream<LDESItem>(async () => { stream.emit("close"); });
+
+    stream.on("data", member => {
+        out.push({ "type": "data", data: member })
+    });
+
+    stream.on("metadata", member => {
+        out.push({ "type": "metadata", data: member })
+    });
+
+    stream.emit("close");
+
+    stream.on("end", () => {
+        out.end();
+    });
+
+    return out;
+}
+
+export class StreamReader {
+    private readonly config: LDESReaderConfig;
     constructor(client: LDESClient, _init: any, url: string) {
-        const stream = client.createReadStream(url, { representation: "Quads" })
-
-        stream.on("data", member => {
-            this.current = member;
-            this.dataStream.push(member);
-        });
-
-        stream.on("metadata", member => {
-            this.currentMeta = member;
-            this.metadataStream.push(member);
-        });
-
-        stream.on("end", () => {
-            this.metadataStream.end();
-            this.dataStream.end();
-        });
+        this.config = { type: "ldes", client, _init, url };
     }
 
-    getStream(): Stream<IMember> {
-        return this.dataStream;
-    }
-
-    getCurrent(): IMember | undefined {
-        return this.current;
-    }
-
-    getMetadataStream(): Stream<IEventStreamMeta> {
-        return this.metadataStream;
-    }
-
-    getCurrentMetadata(): IEventStreamMeta | undefined {
-        return this.currentMeta;
+    stream(): Promise<Stream<LDESItem>> {
+        return startLDESStreamReader(this.config);
     }
 }
