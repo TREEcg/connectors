@@ -1,0 +1,43 @@
+{
+  "name": "@treecg/connector-all",
+  "version": "1.0.0",
+  "description": "Aggregate all connectors defined in @treecg",
+  "author": "ajuvercr <arthur.vercruysse@ugent.be>",
+  "homepage": "https://github.com/TREEcg/connectors#readme",
+  "lsd:module": true,
+  "license": "ISC",
+  "main": "index.js",
+  "types": "index",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "directory": "packages/connector-all",
+    "url": "git+https://github.com/TREEcg/connectors.git"
+  },
+  "scripts": {
+    "test": "jest --detectOpenHandles",
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r call --typeScopedContexts"
+  },
+  "bugs": {
+    "url": "https://github.com/TREEcg/connectors/issues"
+  },
+  "dependencies": {
+    "@treecg/connector-types": "^1.1.1",
+    "@treecg/connector-file": "^1.0.0",
+    "@treecg/connector-ws": "^1.1.1",
+    "@treecg/connector-ldes": "^1.1.1",
+    "@treecg/connector-kafka": "^1.2.1"
+  }
+}
