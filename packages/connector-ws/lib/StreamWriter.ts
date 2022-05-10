@@ -1,82 +1,38 @@
+import { StreamWriterFactory, Writer } from "@treecg/connector-types";
 import { WebSocket } from "ws";
-import { IEventStreamMeta, IMember, IMetadata, IRecord, Serializer, StreamType, StreamWriter } from "@treecg/connector-types";
 
-
-class WSClient<T> {
-    private closedQueue: (() => void)[] = [];
-    private state: keyof T;
-    private readonly serializer: Serializer<T>;
-    private readonly ws: WebSocket;
-
-    private open = false;
-
-    constructor(url: string, serializer: Serializer<T>, startType: keyof T) {
-        this.serializer = serializer;
-        this.ws = new WebSocket(url);
-        this.setDatatype(startType);
-        this.ws.on("error", (e) => {
-            console.error("WS client error:")
-            console.error(e);
-        });
-        this.ws.on("ping", () => this.ws.pong());
-        this.ws.on("open", this.init.bind(this));
-    }
-
-    connected(): Promise<boolean> {
-        return new Promise((res) => {
-            if (this.open) {
-                res(true);
-            } else {
-                this.ws.on("open", () => res(true));
-            }
-        })
-    }
-
-    private init() {
-        this.open = true;
-        this.closedQueue.forEach(h => h());
-        this.closedQueue = [];
-    }
-
-    private setDatatype(type: keyof T) {
-        if (this.open) {
-            if (type != this.state) {
-                this.state = type;
-                this.ws.send(this.state.toString(), { binary: false });
-            }
-        } else {
-            this.closedQueue.push(
-                () => this.setDatatype(type)
-            );
-        }
-    }
-
-    protected sendItem<K extends keyof T>(key: K, item: T[K]) {
-        if (this.open) {
-            this.setDatatype(key);
-            const ser = this.serializer[key](item);
-            this.ws.send(ser, { binary: true });
-        } else {
-            this.closedQueue.push(
-                () => this.sendItem(key, item)
-            );
-        }
-    }
-
-    close() {
-        this.ws.close();
-    }
+export interface WsWriterConfig {
+    type: "ws",
+    url: string,
 }
 
-export class WSStreamWriter<T, M> extends WSClient<StreamType<T, M>> implements StreamWriter<T, M> {
-    constructor(url: string, serializer: Serializer<StreamType<T, M>>) {
-        super(url, serializer, "data");
-    }
-    async push(item: T): Promise<void> {
-        super.sendItem("data", item);
+export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+    const ser = serializer || JSON.stringify;
+    const ws = new WebSocket(config.url);
+    ws.on("error", (e) => {
+        console.error("WS client error:")
+        console.error(e);
+    });
+
+    ws.on("ping", () => ws.pong());
+    await new Promise(res => ws.on("open", res));
+
+    const push = async (item: T) => {
+        const msg = ser(item);
+        await new Promise(res => ws.send(msg, () => res(undefined)));
     }
 
-    async pushMetadata(meta: M): Promise<void> {
-        super.sendItem("metadata", meta);
+    const disconnect = async () => {
+        ws.close();
+    }
+
+    return { push, disconnect };
+}
+
+export class WsStreamWriterFactory implements StreamWriterFactory<WsWriterConfig> {
+    public readonly type = "ws";
+
+    build<T>(config: WsWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+        return startWsStreamWriter(config, serializer);
     }
 }
