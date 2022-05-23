@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-file",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "File connectors, allowing data to flow through a file (on append or on replace)",
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",

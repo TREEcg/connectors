@@ -6,16 +6,27 @@ export interface WsWriterConfig {
     url: string,
 }
 
-export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
-    const ser = serializer || JSON.stringify;
-    const ws = new WebSocket(config.url);
+function _connectWs(url: string, res: (value: WebSocket) => void) {
+    const ws = new WebSocket(url, {});
     ws.on("error", (e) => {
-        console.error("WS client error:")
-        console.error(e);
+        setTimeout(
+            () =>
+                _connectWs(url, res),
+            300
+        );
     });
 
     ws.on("ping", () => ws.pong());
-    await new Promise(res => ws.on("open", res));
+    ws.on("open", () => res(ws));
+}
+
+function connectWs(url: string): Promise<WebSocket> {
+    return new Promise(res => _connectWs(url, res))
+}
+
+export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+    const ser = serializer || JSON.stringify;
+    const ws = await connectWs(config.url);
 
     const push = async (item: T) => {
         const msg = ser(item);

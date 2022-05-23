@@ -2,24 +2,26 @@ import { StreamWriterFactory, Writer } from "@treecg/connector-types";
 import { appendFile, writeFile } from "fs/promises";
 import { FileConnectorType } from "..";
 import { FileReaderConfig } from "./StreamReader";
+import { isAbsolute } from "path";
 
 export interface FileWriterConfig extends FileReaderConfig { }
 
 export async function startFileStreamWriter<T>(config: FileWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
     const ser = serializer || JSON.stringify;
+    const path = isAbsolute(config.path) ? config.path : process.cwd() + "/" + config.path;
     const encoding: BufferEncoding = <BufferEncoding>config.encoding || "utf-8";
 
     if (!config.onReplace) {
-        await writeFile(config.path, "", { encoding })
+        await writeFile(path, "", { encoding })
     }
 
     const push = async (item: T) => {
         const string = ser(item);
 
         if (config.onReplace) {
-            await writeFile(config.path, string, { encoding });
+            await writeFile(path, string, { encoding });
         } else {
-            await appendFile(config.path, string, { encoding });
+            await appendFile(path, string, { encoding });
         }
     };
 

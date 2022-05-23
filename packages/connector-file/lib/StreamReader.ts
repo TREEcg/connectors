@@ -2,6 +2,7 @@
 import { SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
 import { createReadStream } from 'fs';
 import { open, readFile, stat, watch } from "fs/promises";
+import { isAbsolute } from "path";
 import { FileConnectorType } from "..";
 
 export interface FileReaderConfig {
@@ -34,11 +35,12 @@ export async function startFileStreamReader<T>(
     deserializer?: (message: string) => T
 ): Promise<Stream<T>> {
     const des = deserializer || JSON.parse;
+    const path = isAbsolute(config.path) ? config.path : process.cwd() + "/" + config.path;
     const encoding: BufferEncoding = <BufferEncoding>config.encoding || "utf-8";
 
-    await makeSureFileExists(config.path);
+    await makeSureFileExists(path);
 
-    let currentPos = await getFileSize(config.path);
+    let currentPos = await getFileSize(path);
 
     const ac = new AbortController();
     const { signal } = ac;
@@ -48,27 +50,27 @@ export async function startFileStreamReader<T>(
     (async () => {
         if (config.onReplace && config.readFirstContent) {
             console.log("reading first content")
-            const content = await readFile(config.path, { encoding });
+            const content = await readFile(path, { encoding });
             out.push(des(content));
         }
 
         try {
-            const watcher = watch(config.path, { signal });
+            const watcher = watch(path, { signal });
             for await (const event of watcher) {
                 if (event.eventType === "change") {
 
                     let content: string;
                     if (config.onReplace) {
-                        content = await readFile(config.path, { encoding });
+                        content = await readFile(path, { encoding });
                     } else {
-                        const newSize = await getFileSize(config.path);
+                        const newSize = await getFileSize(path);
 
                         if (newSize <= currentPos) {
                             currentPos = newSize;
                             continue;
                         }
 
-                        content = await readPart(config.path, currentPos, newSize, encoding);
+                        content = await readPart(path, currentPos, newSize, encoding);
                         currentPos = newSize;
                     }
 
