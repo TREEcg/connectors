@@ -1,8 +1,9 @@
 
 import { SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
 import { createReadStream } from 'fs';
-import { open, readFile, stat, watch } from "fs/promises";
+import { open, readFile, stat } from "fs/promises";
 import { isAbsolute } from "path";
+import Watcher from 'watcher';
 import { FileConnectorType } from "..";
 
 export interface FileReaderConfig {
@@ -34,7 +35,7 @@ export async function startFileStreamReader<T>(
     config: FileReaderConfig,
     deserializer?: (message: string) => T
 ): Promise<Stream<T>> {
-    const des = deserializer || JSON.parse;
+    const des = deserializer || (x => <T><unknown>x);
     const path = isAbsolute(config.path) ? config.path : process.cwd() + "/" + config.path;
     const encoding: BufferEncoding = <BufferEncoding>config.encoding || "utf-8";
 
@@ -42,47 +43,44 @@ export async function startFileStreamReader<T>(
 
     let currentPos = await getFileSize(path);
 
-    const ac = new AbortController();
-    const { signal } = ac;
-    const out = new SimpleStream<T>(async () => ac.abort());
+    const watcher = new Watcher(path, { debounce: 100 });
+    const out = new SimpleStream<T>(async () => { watcher.close() });
 
-
-    (async () => {
-        if (config.onReplace && config.readFirstContent) {
-            console.log("reading first content")
-            const content = await readFile(path, { encoding });
-            out.push(des(content));
-        }
-
+    watcher.on("change", async path => {
         try {
-            const watcher = watch(path, { signal });
-            for await (const event of watcher) {
-                if (event.eventType === "change") {
+            let content: string;
+            if (config.onReplace) {
+                content = await readFile(path, { encoding });
+            } else {
+                const newSize = await getFileSize(path);
 
-                    let content: string;
-                    if (config.onReplace) {
-                        content = await readFile(path, { encoding });
-                    } else {
-                        const newSize = await getFileSize(path);
-
-                        if (newSize <= currentPos) {
-                            currentPos = newSize;
-                            continue;
-                        }
-
-                        content = await readPart(path, currentPos, newSize, encoding);
-                        currentPos = newSize;
-                    }
-
-                    out.push(des(content));
+                if (newSize <= currentPos) {
+                    currentPos = newSize;
+                    return;
                 }
+
+                content = await readPart(path, currentPos, newSize, encoding);
+                currentPos = newSize;
             }
+
+            out.push(des(content));
         } catch (err: any) {
-            if (err.name === 'AbortError')
-                return;
+            if (err.code === "ENOENT") return;
             throw err;
         }
-    })();
+    });
+
+
+    await Promise.all([
+        new Promise(res => watcher.on("add", res)),
+        new Promise(res => watcher.on("ready", res)),
+    ]);
+
+    if (config.onReplace && config.readFirstContent) {
+        console.log("reading first content")
+        const content = await readFile(path, { encoding });
+        out.push(des(content));
+    }
 
     return out;
 }
@@ -95,3 +93,4 @@ export class FileStreamReaderFactory implements StreamReaderFactory<FileReaderCo
         return startFileStreamReader(config, deserializer);
     }
 }
+

@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-all",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Aggregate all connectors defined in @treecg",
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@treecg/connector-types": "^1.1.1",
-    "@treecg/connector-file": "^1.0.1",
+    "@treecg/connector-file": "^1.0.2",
     "@treecg/connector-ws": "^1.1.3",
     "@treecg/connector-ldes": "^1.1.1",
     "@treecg/connector-kafka": "^1.2.1"
