@@ -24,12 +24,12 @@ function connectWs(url: string): Promise<WebSocket> {
     return new Promise(res => _connectWs(url, res))
 }
 
-export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
     const ser = serializer || JSON.stringify;
     const ws = await connectWs(config.url);
 
     const push = async (item: T) => {
-        const msg = ser(item);
+        const msg = await ser(item);
         await new Promise(res => ws.send(msg, () => res(undefined)));
     }
 
@@ -43,7 +43,7 @@ export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?
 export class WsStreamWriterFactory implements StreamWriterFactory<WsWriterConfig> {
     public readonly type = WSConnectorType;
 
-    build<T>(config: WsWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+    build<T>(config: WsWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
         return startWsStreamWriter(config, serializer);
     }
 }

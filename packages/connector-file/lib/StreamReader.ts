@@ -33,7 +33,7 @@ function readPart(path: string, start: number, end: number, encoding: BufferEnco
 
 export async function startFileStreamReader<T>(
     config: FileReaderConfig,
-    deserializer?: (message: string) => T
+    deserializer?: (message: string) => T | PromiseLike<T>
 ): Promise<Stream<T>> {
     const des = deserializer || (x => <T><unknown>x);
     const path = isAbsolute(config.path) ? config.path : process.cwd() + "/" + config.path;
@@ -63,7 +63,7 @@ export async function startFileStreamReader<T>(
                 currentPos = newSize;
             }
 
-            out.push(des(content));
+            out.push(await des(content));
         } catch (err: any) {
             if (err.code === "ENOENT") return;
             throw err;
@@ -79,7 +79,7 @@ export async function startFileStreamReader<T>(
     if (config.onReplace && config.readFirstContent) {
         console.log("reading first content")
         const content = await readFile(path, { encoding });
-        out.push(des(content));
+        out.push(await des(content));
     }
 
     return out;
@@ -89,7 +89,7 @@ export async function startFileStreamReader<T>(
 export class FileStreamReaderFactory implements StreamReaderFactory<FileReaderConfig> {
     public readonly type = FileConnectorType;
 
-    build<T>(config: FileReaderConfig, deserializer?: (message: string) => T): Promise<Stream<T>> {
+    build<T>(config: FileReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
         return startFileStreamReader(config, deserializer);
     }
 }

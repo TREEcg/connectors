@@ -7,7 +7,7 @@ export interface WsReaderConfig {
     port: number,
 }
 
-export async function startWsStreamReader<T>(config: WsReaderConfig, deserializer?: (message: string) => T): Promise<Stream<T>> {
+export async function startWsStreamReader<T>(config: WsReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
     const des = deserializer || JSON.parse;
     const server = new WebSocketServer(config);
     server.on("error", (e) => {
@@ -41,8 +41,8 @@ export async function startWsStreamReader<T>(config: WsReaderConfig, deserialize
         const instance = { socket: ws, alive: true };
         connections.push(instance);
 
-        ws.on("message", (msg: RawData, isBinary: boolean) => {
-            const item = des(msg.toString())
+        ws.on("message", async (msg: RawData, isBinary: boolean) => {
+            const item = await des(msg.toString())
             stream.push(item);
         });
 
@@ -56,7 +56,7 @@ export async function startWsStreamReader<T>(config: WsReaderConfig, deserialize
 export class WsStreamReaderFactory implements StreamReaderFactory<WsReaderConfig> {
     public readonly type = WSConnectorType;
 
-    build<T>(config: WsReaderConfig, deserializer?: (message: string) => T): Promise<Stream<T>> {
+    build<T>(config: WsReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
         return startWsStreamReader(config, deserializer);
     }
 }

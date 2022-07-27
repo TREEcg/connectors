@@ -6,7 +6,7 @@ import { isAbsolute } from "path";
 
 export interface FileWriterConfig extends FileReaderConfig { }
 
-export async function startFileStreamWriter<T>(config: FileWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+export async function startFileStreamWriter<T>(config: FileWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
     const ser = serializer || JSON.stringify;
     const path = isAbsolute(config.path) ? config.path : process.cwd() + "/" + config.path;
     const encoding: BufferEncoding = <BufferEncoding>config.encoding || "utf-8";
@@ -16,7 +16,7 @@ export async function startFileStreamWriter<T>(config: FileWriterConfig, seriali
     }
 
     const push = async (item: T) => {
-        const string = ser(item);
+        const string = await ser(item);
 
         if (config.onReplace) {
             await writeFile(path, string, { encoding });
@@ -34,7 +34,7 @@ export async function startFileStreamWriter<T>(config: FileWriterConfig, seriali
 export class FileStreamWriterFactory implements StreamWriterFactory<FileWriterConfig> {
     public readonly type = FileConnectorType;
 
-    build<T>(config: FileWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+    build<T>(config: FileWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
         return startFileStreamWriter(config, serializer);
     }
 }

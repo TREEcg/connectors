@@ -13,7 +13,7 @@ export interface KafkaReaderConfig {
     broker: string | BrokerConfig,
 }
 
-export async function startKafkaStreamReader<T>(config: KafkaReaderConfig, deserializer?: (message: string) => T): Promise<Stream<T>> {
+export async function startKafkaStreamReader<T>(config: KafkaReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
     const des = deserializer || JSON.parse;
 
     const brokerConfig: any = {};
@@ -39,7 +39,7 @@ export async function startKafkaStreamReader<T>(config: KafkaReaderConfig, deser
     consumer.run({
         eachMessage: async ({ topic, message }: { topic: string, message: KafkaMessage }) => {
             if (topic === config.topic.name) {
-                const element = des(message.value!.toString());
+                const element = await des(message.value!.toString());
                 stream.push(element);
             }
         }
@@ -51,7 +51,7 @@ export async function startKafkaStreamReader<T>(config: KafkaReaderConfig, deser
 export class KafkaStreamReaderFactory implements StreamReaderFactory<KafkaReaderConfig> {
     public readonly type = KafkaConnectorType;
 
-    build<T>(config: KafkaReaderConfig, deserializer?: (message: string) => T): Promise<Stream<T>> {
+    build<T>(config: KafkaReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
         return startKafkaStreamReader(config, deserializer);
     }
 }

@@ -1,6 +1,6 @@
 export type Configs<T, C> = { [P in keyof T]: Typed<C> };
-export type Deserializers<T> = { [P in keyof T]?: (member: string) => T[P] };
-export type Serializers<T> = { [P in keyof T]?: (item: T[P]) => string };
+export type Deserializers<T> = { [P in keyof T]?: (member: string) => T[P] | PromiseLike<T[P]> };
+export type Serializers<T> = { [P in keyof T]?: (item: T[P]) => string | PromiseLike<string> };
 
 export interface Writer<T> {
     push(item: T): Promise<void>;
@@ -22,12 +22,12 @@ export interface Typed<C> {
 
 export interface StreamReaderFactory<C> {
     type: string;
-    build<T>(config: C, deserializer?: (message: string) => T): Promise<Stream<T>>;
+    build<T>(config: C, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>>;
 }
 
 export interface StreamWriterFactory<C> {
     type: string;
-    build<T>(config: C, serializer?: (item: T) => string): Promise<Writer<T>>;
+    build<T>(config: C, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>>;
 }
 
 
@@ -76,7 +76,7 @@ export class ReaderFactory<C> {
         this.factories = factories;
     }
 
-    async build<T>(config: Typed<C>, deserializer?: (message: string) => T): Promise<Stream<T>> {
+    async build<T>(config: Typed<C>, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
         for (let factory of this.factories) {
             if (factory.type.toLocaleLowerCase() === config.type.toLocaleLowerCase()) {
                 return factory.build(config.config, deserializer);
@@ -106,7 +106,7 @@ export class WriterFactory<C> {
         this.factories = factories;
     }
 
-    async build<T>(config: Typed<C>, serializer?: (item: T) => string): Promise<Writer<T>> {
+    async build<T>(config: Typed<C>, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
         for (let factory of this.factories) {
             if (factory.type.toLocaleLowerCase() === config.type.toLowerCase()) {
                 return factory.build(config.config, serializer);
@@ -148,13 +148,13 @@ export class SimpleStream<T> implements Stream<T> {
         return this;
     }
 
-    push(data: T) {
+    async push(data: T): Promise<void> {
         this.lastElement = data;
-        this.dataHandlers.forEach(h => h(data));
+        await Promise.all(this.dataHandlers.map(h => h(data)));
     }
 
-    end() {
-        this.endHandlers.forEach(h => h());
+    async end(): Promise<void> {
+        await Promise.all(this.endHandlers.map(h => h()));
     }
 
     on(event: "data", listener: Handler<T>): this;

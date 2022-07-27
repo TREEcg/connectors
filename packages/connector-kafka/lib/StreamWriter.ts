@@ -12,7 +12,7 @@ export interface KafkaWriterConfig {
 }
 
 
-export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
     const ser = serializer || JSON.stringify;
     const topic = config.topic.name;
 
@@ -30,7 +30,7 @@ export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig, seria
     await producer.connect();
 
     const push = async (item: T) => {
-        const mes = ser(item);
+        const mes = await ser(item);
         await producer.send(
             { topic, messages: [{ value: mes }] }
         );
@@ -46,7 +46,7 @@ export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig, seria
 export class KafkaStreamWriterFactory implements StreamWriterFactory<KafkaWriterConfig> {
     public readonly type = "kafka";
 
-    build<T>(config: KafkaWriterConfig, serializer?: (item: T) => string): Promise<Writer<T>> {
+    build<T>(config: KafkaWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
         return startKafkaStreamWriter(config, serializer);
     }
 }
