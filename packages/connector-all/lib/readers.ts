@@ -3,7 +3,7 @@ import * as rdf from "@rdfjs/types";
 import { FileConnectorType } from "@treecg/connector-file";
 import { HTTPConnectorType } from "@treecg/connector-http";
 import { KafkaConnectorType, KafkaReaderConfig } from "@treecg/connector-kafka";
-import { ConsumerConfig } from "@treecg/connector-kafka/lib/Common";
+import { BrokerConfig, ConsumerConfig } from "@treecg/connector-kafka/lib/Common";
 import { Typed } from "@treecg/connector-types";
 import { WSConnectorType } from "@treecg/connector-ws";
 import { RDF } from "@treecg/types";
@@ -46,6 +46,7 @@ async function objToKafkaConfig(subj: rdf.Term, match: MatchFunctionObject): Pro
   const out = {} as KafkaReaderConfig;
   out.topic = {} as { fromBeginning?: boolean, name: string };
   out.consumer = {} as ConsumerConfig;
+  out.broker = {} as BrokerConfig;
 
   const topics = await match(subj, CONN.terms.kafkaTopic, null);
   const brokers = await match(subj, CONN.terms.kafkaBroker, null);
@@ -56,7 +57,7 @@ async function objToKafkaConfig(subj: rdf.Term, match: MatchFunctionObject): Pro
   out.topic.name = getOne("kafkaTopic", topics).value;
   out.topic.fromBeginning = parseBool(fromBeginning[0]?.value);
 
-  out.broker = getOne("kafkaBroker", brokers).value;
+  out.broker.hosts = brokers.map(x => x.value);
   out.consumer.groupId = getOne("kafkaGroup", groups).value;
 
   return out;

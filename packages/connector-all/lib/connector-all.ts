@@ -40,6 +40,7 @@ export class AllWriterFactory extends WriterFactory<WriterConfig> {
 }
 
 export type MatchFunction = (s: rdf.Term | undefined | null, p: rdf.Term | undefined | null, o: rdf.Term | undefined | null) => Promise<rdf.Quad[]>;
+
 export type MatchFunctionObject = (s: rdf.Term | undefined | null, p: rdf.Term | undefined | null, o: rdf.Term | undefined | null) => Promise<rdf.Term[]>;
 export function storeMatcher(store: rdf.Store): MatchFunction {
     return (s, p, o) => {

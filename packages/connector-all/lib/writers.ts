@@ -2,6 +2,7 @@ import * as rdf from "@rdfjs/types";
 import { FileConnectorType } from "@treecg/connector-file";
 import { HTTPConnectorType } from "@treecg/connector-http";
 import { KafkaConnectorType } from "@treecg/connector-kafka";
+import { BrokerConfig } from "@treecg/connector-kafka/lib/Common";
 import { Typed } from "@treecg/connector-types";
 import { WSConnectorType } from "@treecg/connector-ws";
 import { RDF } from "@treecg/types";
@@ -43,12 +44,13 @@ async function objToKafkaConfig(subj: rdf.Term, match: MatchFunctionObject): Pro
   const out = {} as KafkaWriterConfig;
   // Types? What types
   out.topic = {} as { name: string };
+  out.broker = {} as BrokerConfig;
 
   const topics = await match(subj, CONN.terms.kafkaTopic, null);
   const brokers = await match(subj, CONN.terms.kafkaBroker, null);
 
   out.topic.name = getOne("kafkaTopic", topics).value;
-  out.broker = getOne("kafkaBroker", brokers).value;
+  out.broker.hosts = brokers.map(x => x.value);
 
   return out;
 }
