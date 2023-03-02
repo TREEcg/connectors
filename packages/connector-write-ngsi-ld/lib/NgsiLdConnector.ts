@@ -61,10 +61,9 @@ export class NgsiLdConnector implements IWritableConnector {
    */
   public async writeVersion(member: any): Promise<void> {
     try {
-      console.log('write version');
       const ngsildify = new Ngsildify();
       const objectsNgsi = await ngsildify.transform(member);
-      console.log(`Transformed objects: ${JSON.stringify(objectsNgsi)}`);
+
       for (const obj of objectsNgsi) {
         try {
           const memberURI = obj.id ? obj.id : obj['@id'];
@@ -102,7 +101,6 @@ export class NgsiLdConnector implements IWritableConnector {
   }
 
   private async createEntity(entity: any): Promise<boolean> {
-    let created = false;
     const requestInit: RequestInit = {
       method: 'POST',
       headers: {
@@ -115,20 +113,13 @@ export class NgsiLdConnector implements IWritableConnector {
     const response = await this.fetcher.fetch(url, requestInit);
 
     if (response.ok) {
-      created = response.ok;
+      return true;
     }
 
-    if (created) {
-      console.log('Succesfully created entity in broker');
-    } else {
-      console.log(`Something went wrong: ${response.statusText}`);
-    }
-
-    return created;
+    return false;
   }
 
   private async updateEntity(entity: any): Promise<boolean> {
-    let updated = false;
     const memberURI = entity.id ? entity.id : entity['@id'];
     const requestInit: RequestInit = {
       method: 'PATCH',
@@ -142,16 +133,10 @@ export class NgsiLdConnector implements IWritableConnector {
     const response = await this.fetcher.fetch(url, requestInit);
 
     if (response.ok) {
-      updated = response.ok;
+      return true;
     }
 
-    if (updated) {
-      console.log('Succesfully updated entity in broker');
-    } else {
-      console.log(`Something went wrong: ${response.statusText}`);
-    }
-
-    return updated;
+    return false;
   }
 
   /**
