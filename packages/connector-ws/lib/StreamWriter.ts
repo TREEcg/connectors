@@ -1,4 +1,4 @@
-import { StreamWriterFactory, Writer } from "@treecg/connector-types";
+import { fromSerializer, StreamWriterFactory, Writer } from "@treecg/connector-types";
 import { WebSocket } from "ws";
 import { WSConnectorType } from "..";
 
@@ -25,7 +25,7 @@ function connectWs(url: string): Promise<WebSocket> {
 }
 
 export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
-    const ser = serializer || JSON.stringify;
+    const ser = fromSerializer(serializer);
     const ws = await connectWs(config.url);
 
     const push = async (item: T) => {

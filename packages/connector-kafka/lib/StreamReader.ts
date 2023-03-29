@@ -1,4 +1,4 @@
-import { SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
+import { fromDeserializer, SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
 import { Kafka, KafkaConfig, KafkaMessage } from 'kafkajs';
 import { readFileSync } from "node:fs";
 import { KafkaConnectorType } from "..";
@@ -14,7 +14,7 @@ export interface KafkaReaderConfig {
 }
 
 export async function startKafkaStreamReader<T>(config: KafkaReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
-    const des = deserializer || JSON.parse;
+    const des = fromDeserializer(deserializer);
 
     const brokerConfig: any = {};
     if (typeof config.broker === "string" || config.broker instanceof String) {

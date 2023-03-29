@@ -1,5 +1,5 @@
 
-import { SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
+import { fromDeserializer, SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
 import { createReadStream } from 'fs';
 import { open, readFile, stat } from "fs/promises";
 import { isAbsolute } from "path";
@@ -35,7 +35,7 @@ export async function startFileStreamReader<T>(
     config: FileReaderConfig,
     deserializer?: (message: string) => T | PromiseLike<T>
 ): Promise<Stream<T>> {
-    const des = deserializer || (x => <T><unknown>x);
+    const des = fromDeserializer(deserializer);
     const path = isAbsolute(config.path) ? config.path : process.cwd() + "/" + config.path;
     const encoding: BufferEncoding = <BufferEncoding>config.encoding || "utf-8";
 

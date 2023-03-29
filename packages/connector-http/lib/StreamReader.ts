@@ -1,4 +1,4 @@
-import { SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
+import { fromDeserializer, SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
 import { createServer, IncomingMessage, RequestListener, Server, ServerResponse } from "http";
 import { Readable } from "stream";
 import { HTTPConnectorType } from "..";
@@ -19,7 +19,7 @@ export interface HttpReaderConfig {
 }
 
 export function startHttpStreamReader<T>(config: HttpReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
-    const des = deserializer || JSON.parse;
+    const des = fromDeserializer(deserializer);
     let server: Server | undefined;
 
     const stream = new SimpleStream<T>(() => new Promise(res => {
@@ -34,7 +34,7 @@ export function startHttpStreamReader<T>(config: HttpReaderConfig, deserializer?
     const requestListener: RequestListener = async function(req: IncomingMessage, res: ServerResponse) {
         try {
             const content = await streamToString(req);
-            stream.push(des(content));
+            stream.push(await des(content));
         } catch (ex: any) {
             console.error("Failed", ex);
         }

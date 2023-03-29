@@ -1,4 +1,4 @@
-import { SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
+import { fromDeserializer, SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
 import { RawData, WebSocket, WebSocketServer } from 'ws';
 import { WSConnectorType } from "..";
 
@@ -8,7 +8,7 @@ export interface WsReaderConfig {
 }
 
 export async function startWsStreamReader<T>(config: WsReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
-    const des = deserializer || JSON.parse;
+    const des = fromDeserializer(deserializer);
     const server = new WebSocketServer(config);
     server.on("error", (e) => {
         console.error("Ws server error:")
