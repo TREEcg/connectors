@@ -1,4 +1,4 @@
-import { StreamWriterFactory, Writer } from '@treecg/connector-types';
+import { fromSerializer, StreamWriterFactory, Writer } from '@treecg/connector-types';
 import { Kafka, KafkaConfig, ProducerConfig } from 'kafkajs';
 import { readFileSync } from 'node:fs';
 import { BrokerConfig } from './Common';
@@ -13,7 +13,7 @@ export interface KafkaWriterConfig {
 
 
 export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
-    const ser = serializer || JSON.stringify;
+    const ser = fromSerializer(serializer);
     const topic = config.topic.name;
 
     const brokerConfig: any = {};

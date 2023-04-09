@@ -1,4 +1,4 @@
-import { StreamWriterFactory, Writer } from "@treecg/connector-types";
+import { fromSerializer, StreamWriterFactory, Writer } from "@treecg/connector-types";
 import { HTTPConnectorType } from "..";
 
 import * as https from "https";
@@ -12,7 +12,7 @@ export interface HttpWriterConfig {
 
 
 export async function startHttpStreamWriter<T>(config: HttpWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
-    const ser = serializer || JSON.stringify;
+    const ser = fromSerializer(serializer);
     const requestConfig = <https.RequestOptions>new URL(config.url);
 
 
