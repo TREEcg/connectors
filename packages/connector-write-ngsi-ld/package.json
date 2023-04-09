@@ -1,6 +1,6 @@
 {
 	"name": "@treecg/connector-write-ngsi-ld",
-	"version": "0.0.19",
+	"version": "0.0.20",
 	"description": "> TODO: description",
 	"homepage": "https://github.com/TREEcg/connectors#readme",
 	"license": "ISC",
