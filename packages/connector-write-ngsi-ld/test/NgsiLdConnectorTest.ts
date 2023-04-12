@@ -52,8 +52,6 @@ describe('NgsiLdConnector', () => {
     config = {
       amountOfVersions: 0,
       ngsiEndpoint: 'http://localhost:9090/ngsi-ld/v1/',
-      enableLdesVersioning: {
-      },
     };
     const con = new NgsiLdConnector(config, defaultShape, '1');
     const member = {

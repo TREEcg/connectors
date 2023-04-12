@@ -9,11 +9,6 @@ export interface IConfigNgsiLdConnector extends IConfigConnector {
   clientId?: string;
   clientSecret?: string;
   tokenEndpoint?: string;
-  enableLdesVersioning?: IConfigLdesVersioning;
-}
-
-export interface IConfigLdesVersioning {
-  // Will be auto generated in NGSI-LDES with the createdAt/modifiedAt property
   timestampPath?: string;
   versionOfPath?: string;
 }
@@ -22,7 +17,8 @@ export class NgsiLdConnector implements IWritableConnector {
   private readonly members: any[];
   private readonly fetcher: any = {};
   private readonly ngsiEndpoint: string;
-  private readonly enableLdesVersioning: IConfigLdesVersioning;
+  private readonly timestampPath: string;
+  private readonly versionOfPath: string;
 
   /**
    * Templates for the backend generator.
@@ -35,12 +31,12 @@ export class NgsiLdConnector implements IWritableConnector {
     this.members = [];
     this.ngsiEndpoint = config.ngsiEndpoint;
 
-    if (config.enableLdesVersioning) {
-      this.enableLdesVersioning = config.enableLdesVersioning;
+    if (config.timestampPath) {
+      this.timestampPath = config.timestampPath;
+    }
 
-      if (!this.enableLdesVersioning.versionOfPath) {
-        this.enableLdesVersioning.versionOfPath = 'http://purl.org/dc/terms/isVersionOf';
-      }
+    if (config.versionOfPath) {
+      this.versionOfPath = config.versionOfPath;
     }
 
     if (config.clientId && config.clientSecret && config.tokenEndpoint) {
@@ -61,31 +57,14 @@ export class NgsiLdConnector implements IWritableConnector {
    */
   public async writeVersion(member: any): Promise<void> {
     try {
-      const ngsildify = new Ngsildify();
+      const ngsildify = new Ngsildify({
+        timestampPath: this.timestampPath,
+        versionOfPath: this.versionOfPath,
+      });
       const objectsNgsi = await ngsildify.transform(member);
 
       for (const obj of objectsNgsi) {
         try {
-          const memberURI = obj.id ? obj.id : obj['@id'];
-
-          // Add versioning when versionOfPath is not available
-          if (this.enableLdesVersioning && this.enableLdesVersioning.versionOfPath &&
-              !obj[this.enableLdesVersioning.versionOfPath]) {
-            // Create version URI
-            const now = new Date().toISOString();
-            const versionURI = `${memberURI}/${now}`;
-            obj[this.enableLdesVersioning.versionOfPath] = {
-              '@type': 'Relationship',
-              object: memberURI,
-            };
-
-            if (obj.id) {
-              obj.id = versionURI;
-            } else {
-              obj['@id'] = versionURI;
-            }
-          }
-
           const created = await this.createEntity(obj);
 
           if (!created) {
