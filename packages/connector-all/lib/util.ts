@@ -1,14 +1,13 @@
-
 export function parseBool(stringValue: string): boolean {
   switch (stringValue?.toLowerCase()?.trim()) {
-    case "true":
-    case "yes":
-    case "1":
+    case 'true':
+    case 'yes':
+    case '1':
       return true;
 
-    case "false":
-    case "no":
-    case "0":
+    case 'false':
+    case 'no':
+    case '0':
     case null:
     case undefined:
       return false;
@@ -20,7 +19,7 @@ export function parseBool(stringValue: string): boolean {
 
 export function getOne<T>(error: string, ts: T[]): T {
   if (ts.length !== 1) {
-    throw `Expected exactly 1 ${error}, found ${ts.length}`;
+    throw new Error(`Expected exactly 1 ${error}, found ${ts.length}`);
   }
 
   return ts[0];

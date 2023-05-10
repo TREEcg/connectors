@@ -1,49 +1,52 @@
-import { fromSerializer, StreamWriterFactory, Writer } from "@treecg/connector-types";
-import { WebSocket } from "ws";
-import { WSConnectorType } from "..";
+import type { IStreamWriterFactory, IWriter } from '@treecg/connector-types';
+import { fromSerializer } from '@treecg/connector-types';
+import { WebSocket } from 'ws';
+import { WSConnectorType } from '..';
 
-export interface WsWriterConfig {
-    url: string,
+export interface IWsWriterConfig {
+  url: string;
 }
 
-function _connectWs(url: string, res: (value: WebSocket) => void) {
-    const ws = new WebSocket(url, {});
-    ws.on("error", (e) => {
-        setTimeout(
-            () =>
-                _connectWs(url, res),
-            300
-        );
-    });
+function _connectWs(url: string, res: (value: WebSocket) => void): void {
+  const ws = new WebSocket(url, {});
+  ws.on('error', () => {
+    setTimeout(
+      () =>
+        _connectWs(url, res),
+      300,
+    );
+  });
 
-    ws.on("ping", () => ws.pong());
-    ws.on("open", () => res(ws));
+  ws.on('ping', () => ws.pong());
+  ws.on('open', () => res(ws));
 }
 
 function connectWs(url: string): Promise<WebSocket> {
-    return new Promise(res => _connectWs(url, res))
+  return new Promise(res => _connectWs(url, res));
 }
 
-export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
-    const ser = fromSerializer(serializer);
-    const ws = await connectWs(config.url);
+export async function startWsStreamWriter<T>(config: IWsWriterConfig,
+  serializer?: (item: T) => string | PromiseLike<string>): Promise<IWriter<T>> {
+  const ser = fromSerializer(serializer);
+  const ws = await connectWs(config.url);
 
-    const push = async (item: T) => {
-        const msg = await ser(item);
-        await new Promise(res => ws.send(msg, () => res(undefined)));
-    }
+  const push = async (item: T): Promise<void> => {
+    const msg = await ser(item);
+    await new Promise<void>(res => ws.send(msg, () => res()));
+  };
 
-    const disconnect = async () => {
-        ws.close();
-    }
+  const disconnect = async (): Promise<void> => {
+    ws.close();
+  };
 
-    return { push, disconnect };
+  return { push, disconnect };
 }
 
-export class WsStreamWriterFactory implements StreamWriterFactory<WsWriterConfig> {
-    public readonly type = WSConnectorType;
+export class WsStreamWriterFactory implements IStreamWriterFactory<IWsWriterConfig> {
+  public readonly type = WSConnectorType;
 
-    build<T>(config: WsWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
-        return startWsStreamWriter(config, serializer);
-    }
+  public build<T>(config: IWsWriterConfig,
+    serializer?: (item: T) => string | PromiseLike<string>): Promise<IWriter<T>> {
+    return startWsStreamWriter(config, serializer);
+  }
 }

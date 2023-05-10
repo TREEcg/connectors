@@ -35,6 +35,7 @@ module.exports = {
     Headers: false,
     Request: false,
     XMLHttpRequest: false,
+    BufferEncoding: "readonly"
   },
   rules: {
     "no-empty": "off",
@@ -96,6 +97,10 @@ module.exports = {
     "unicorn/no-new-array": "off",
 
     // TS
+    "@typescript-eslint/no-base-to-string": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-shadow": "off",
+    "@typescript-eslint/no-namespace": "off",
     "@typescript-eslint/lines-between-class-members": [
       "error",
       { exceptAfterSingleLine: true },

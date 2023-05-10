@@ -5,7 +5,7 @@
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.js",
   "types": "index",
   "directories": {
@@ -34,28 +34,28 @@
   "scripts": {
     "test": "jest",
     "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r cldes --typeScopedContexts"
+    "build:ts": "tsc",
+    "build:components": "componentsjs-generator -i ../../.componentsignore.json -r cldes"
   },
   "dependencies": {
-    "@comunica/bus-init": "=1.20.0",
-    "@comunica/bus-rdf-metadata-extract": "1.21.1",
-    "@comunica/core": "1.21.1",
+    "@comunica/bus-init": "^2.6.8",
+    "@comunica/bus-rdf-metadata-extract": "^2.6.8",
+    "@comunica/core": "^2.6.8",
     "@rdfjs/types": "^1.1.0",
-    "@treecg/actor-init-ldes-client": "^2.5.8",
-    "@treecg/actor-rdf-filter-object-with-framing": "^2.3.6",
-    "@treecg/actor-rdf-filter-objects-with-quadstore": "^2.3.6",
-    "@treecg/actor-rdf-frame-with-json-ld-js": "^2.3.6",
-    "@treecg/actor-rdf-metadata-extract-tree": "^1.20.0",
-    "@treecg/bus-rdf-filter-object": "^2.3.4",
-    "@treecg/bus-rdf-frame": "^2.3.4",
-    "@treecg/connector-types": "^1.1.7",
-    "arrayify-stream": "^1.0.0",
-    "rdf-data-factory": "^1.1.0",
-    "rdf-parse": "^1.9.1"
+    "@treecg/actor-init-ldes-client": "^4.0.5",
+    "@treecg/actor-rdf-filter-object-with-framing": "^4.0.0",
+    "@treecg/actor-rdf-filter-objects-with-quadstore": "^4.0.0",
+    "@treecg/actor-rdf-frame-with-json-ld-js": "^4.0.0",
+    "@treecg/actor-rdf-metadata-extract-tree": "^2.0.0",
+    "@treecg/bus-rdf-filter-object": "^4.0.0",
+    "@treecg/bus-rdf-frame": "^4.0.0",
+    "@treecg/connector-types": "^1.1.8",
+    "arrayify-stream": "^2.0.1",
+    "rdf-data-factory": "^1.1.1",
+    "rdf-parse": "^2.3.2"
   },
   "devDependencies": {
-    "@types/clownface": "^1.2.6",
+    "@types/clownface": "^1.5.2",
     "@types/node": "^14.0.0"
   },
   "gitHead": "96160f536c5624c7175a589e1dc324664c1db662"

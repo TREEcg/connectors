@@ -1,40 +1,42 @@
-import { fromSerializer, StreamWriterFactory, Writer } from "@treecg/connector-types";
-import { appendFile, writeFile } from "fs/promises";
-import { FileConnectorType } from "..";
-import { FileReaderConfig } from "./StreamReader";
-import { isAbsolute } from "path";
+import { appendFile, writeFile } from 'fs/promises';
+import { isAbsolute } from 'path';
+import type { IStreamWriterFactory, IWriter } from '@treecg/connector-types';
+import { fromSerializer } from '@treecg/connector-types';
+import { FileConnectorType } from '..';
+import type { IFileReaderConfig } from './StreamReader';
 
-export interface FileWriterConfig extends FileReaderConfig { }
+export interface IFileWriterConfig extends IFileReaderConfig { }
 
-export async function startFileStreamWriter<T>(config: FileWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
-    const ser = fromSerializer(serializer);
-    const path = isAbsolute(config.path) ? config.path : process.cwd() + "/" + config.path;
-    const encoding: BufferEncoding = <BufferEncoding>config.encoding || "utf-8";
+export async function startFileStreamWriter<T>(config: IFileWriterConfig,
+  serializer?: (item: T) => string | PromiseLike<string>): Promise<IWriter<T>> {
+  const ser = fromSerializer(serializer);
+  const path = isAbsolute(config.path) ? config.path : `${process.cwd()}/${config.path}`;
+  const encoding: BufferEncoding = <BufferEncoding>config.encoding || 'utf-8';
 
-    if (!config.onReplace) {
-        await writeFile(path, "", { encoding })
+  if (!config.onReplace) {
+    await writeFile(path, '', { encoding });
+  }
+
+  const push = async (item: T): Promise<void> => {
+    const string = await ser(item);
+
+    if (config.onReplace) {
+      await writeFile(path, string, { encoding });
+    } else {
+      await appendFile(path, string, { encoding });
     }
+  };
 
-    const push = async (item: T) => {
-        const string = await ser(item);
-
-        if (config.onReplace) {
-            await writeFile(path, string, { encoding });
-        } else {
-            await appendFile(path, string, { encoding });
-        }
-    };
-
-    return {
-        push, disconnect: async () => { }
-    }
+  return {
+    push, async disconnect() { },
+  };
 }
 
+export class FileStreamWriterFactory implements IStreamWriterFactory<IFileWriterConfig> {
+  public readonly type = FileConnectorType;
 
-export class FileStreamWriterFactory implements StreamWriterFactory<FileWriterConfig> {
-    public readonly type = FileConnectorType;
-
-    build<T>(config: FileWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
-        return startFileStreamWriter(config, serializer);
-    }
+  public build<T>(config: IFileWriterConfig,
+    serializer?: (item: T) => string | PromiseLike<string>): Promise<IWriter<T>> {
+    return startFileStreamWriter(config, serializer);
+  }
 }

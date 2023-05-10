@@ -4,7 +4,10 @@
     "Quad",
     "Configs",
     "Deserializers",
-    "LDESItem",
+    "ILDESItem",
     "SimpleStream",
-    "SASLOptions"
+    "SASLOptions",
+    "Headers",
+    "EventEmitter",
+    "RDF.Stream"
 ]

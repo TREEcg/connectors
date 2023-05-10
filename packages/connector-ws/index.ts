@@ -1,3 +1,3 @@
-export const WSConnectorType = "ws";
-export * from "./lib/StreamReader";
-export * from "./lib/StreamWriter";
+export const WSConnectorType = 'ws';
+export * from './lib/StreamReader';
+export * from './lib/StreamWriter';
