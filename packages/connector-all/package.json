@@ -26,9 +26,8 @@
   },
   "scripts": {
     "test": "jest --detectOpenHandles",
-    "build": "npm run build:ts && npm run build:components",
-    "build:ts": "tsc",
-    "build:components": "componentsjs-generator -i ../../.componentsignore.json -r call"
+    "build": "npm run build:ts",
+    "build:ts": "tsc"
   },
   "bugs": {
     "url": "https://github.com/TREEcg/connectors/issues"
