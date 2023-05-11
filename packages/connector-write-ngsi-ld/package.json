@@ -3,7 +3,7 @@
 	"version": "0.0.28",
 	"description": "> TODO: description",
 	"homepage": "https://github.com/TREEcg/connectors#readme",
-	"license": "ISC",
+	"license": "MIT",
 	"main": "index.js",
 	"directories": {
 		"lib": "lib",
