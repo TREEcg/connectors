@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@rdfjs/types": "^1.1.0",
-    "@treecg/connector-file": "^1.0.7",
+    "@treecg/connector-file": "^1.0.8",
     "@treecg/connector-http": "^1.0.6",
     "@treecg/connector-kafka": "^1.2.6",
     "@treecg/connector-ldes": "^1.1.5",
