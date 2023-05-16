@@ -45,5 +45,6 @@
   },
   "devDependencies": {
     "n3": "^1.16.3"
-  }
+  },
+  "gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314"
 }

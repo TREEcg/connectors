@@ -36,5 +36,6 @@
   "dependencies": {
     "@treecg/connector-types": "^1.1.9",
     "node-fetch": "^2.6.1"
-  }
+  },
+  "gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314"
 }

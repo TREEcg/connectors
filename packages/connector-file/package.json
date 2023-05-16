@@ -36,5 +36,6 @@
   "dependencies": {
     "@treecg/connector-types": "^1.1.9",
     "watcher": "^1.2.0"
-  }
+  },
+  "gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314"
 }

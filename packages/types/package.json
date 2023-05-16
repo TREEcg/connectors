@@ -35,7 +35,7 @@
   "bugs": {
     "url": "https://github.com/TREEcg/connectors/issues"
   },
-  "gitHead": "96160f536c5624c7175a589e1dc324664c1db662",
+  "gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314",
   "devDependencies": {
     "typescript": "^4.6.3"
   }
