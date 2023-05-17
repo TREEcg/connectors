@@ -18,7 +18,7 @@ export async function startHttpStreamWriter<T>(config: HttpWriterConfig,
     const push = async (item: T): Promise<void> => {
         const body = await ser(item);
 
-        await new Promise(async res => {
+        await new Promise(res => {
             const options = {
                 hostname: requestConfig.hostname,
                 path: requestConfig.path,

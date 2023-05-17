@@ -19,13 +19,15 @@ export async function startKafkaStreamReader<T>(config: KafkaReaderConfig,
     deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
     const des = fromDeserializer(deserializer);
 
-    const brokerConfig: any = {};
+    const brokerConfig: unknown = {};
     if (typeof config.broker === "string" || config.broker instanceof String) {
-        Object.assign(brokerConfig, JSON.parse(readFileSync(<string>config.broker, "utf-8")));
+        Object.assign(<BrokerConfig>brokerConfig, JSON.parse(readFileSync(<string>config.broker, "utf-8")));
     } else {
-        Object.assign(brokerConfig, config.broker);
+        Object.assign(<BrokerConfig>brokerConfig, config.broker);
     }
-    brokerConfig.brokers = brokerConfig.hosts;
+    if(brokerConfig && (<BrokerConfig>brokerConfig).hosts) {
+        (<KafkaConfig>brokerConfig).brokers =(<BrokerConfig>brokerConfig).hosts;
+    }
 
     const kafka = new Kafka(<KafkaConfig>brokerConfig);
 
@@ -42,7 +44,7 @@ export async function startKafkaStreamReader<T>(config: KafkaReaderConfig,
     consumer.run({
         async eachMessage({ topic, message }: { topic: string; message: KafkaMessage }) {
             if (topic === config.topic.name) {
-                const element = await des(message.value!.toString());
+                const element = await des(message.value?.toString() ?? "");
                 stream.push(element).catch(error => {
                     throw error;
                 });

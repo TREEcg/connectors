@@ -23,7 +23,7 @@ export interface HttpReaderConfig {
 export function startHttpStreamReader<T>(config: HttpReaderConfig,
     deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
     const des = fromDeserializer(deserializer);
-    let server: Server | undefined;
+    let server: Server | undefined = undefined;
 
     const stream = new SimpleStream<T>(() => new Promise(res => {
         const cb = (): void => res();
@@ -51,7 +51,7 @@ export function startHttpStreamReader<T>(config: HttpReaderConfig,
     server = createServer(requestListener);
     return new Promise(res => {
         const cb = (): void => res(stream);
-        server!.listen(config.port, config.host, cb);
+        server?.listen(config.port, config.host, cb);
     });
 }
 

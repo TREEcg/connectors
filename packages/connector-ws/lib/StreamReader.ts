@@ -46,7 +46,7 @@ export async function startWsStreamReader<T>(config: WsReaderConfig,
         const instance = { socket: ws, alive: true };
         connections.push(instance);
 
-        ws.on("message", async (msg: RawData, isBinary: boolean) => {
+        ws.on("message", async (msg: RawData) => {
             const item = await des(msg.toString());
             stream.push(item).catch(error => {
                 throw error;
