@@ -5,7 +5,7 @@
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
   "lsd:module": true,
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.js",
   "types": "index",
   "directories": {
@@ -26,9 +26,8 @@
   },
   "scripts": {
     "test": "jest --detectOpenHandles",
-    "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r call --typeScopedContexts"
+    "build": "npm run build:ts",
+    "build:ts": "tsc"
   },
   "bugs": {
     "url": "https://github.com/TREEcg/connectors/issues"
@@ -39,11 +38,11 @@
     "@treecg/connector-http": "^1.0.6",
     "@treecg/connector-kafka": "^1.2.6",
     "@treecg/connector-ldes": "^1.1.5",
-    "@treecg/connector-types": "^1.1.7",
+    "@treecg/connector-types": "^1.1.8",
     "@treecg/connector-ws": "^1.1.8",
-    "@treecg/types": "^0.4.0"
+    "@treecg/types": "^0.4.2"
   },
   "devDependencies": {
-    "n3": "^1.16.3"
+    "n3": "^1.16.4"
   }
 }

@@ -2,10 +2,11 @@
   "name": "@treecg/connector-ws",
   "version": "1.1.8",
   "description": "Simple Websocket connectors",
+  "type": "module",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.js",
   "types": "index",
   "directories": {
@@ -25,19 +26,19 @@
     "url": "git+https://github.com/TREEcg/connectors.git"
   },
   "scripts": {
-    "test": "jest",
+    "test": "npm run build:ts && NODE_OPTIONS=--experimental-vm-modules npx jest --coverageThreshold '{}'",
     "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r cws --typeScopedContexts"
+    "build:ts": "tsc",
+    "build:components": "componentsjs-generator -i ../../.componentsignore.json -r cws"
   },
   "bugs": {
     "url": "https://github.com/TREEcg/connectors/issues"
   },
   "dependencies": {
-    "@treecg/connector-types": "^1.1.7",
-    "ws": "^8.5.0"
+    "@treecg/connector-types": "^1.1.8",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
-    "@types/ws": "^8.5.3"
+    "@types/ws": "^8.5.4"
   }
 }

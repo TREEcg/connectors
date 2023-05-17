@@ -1,2 +1,2 @@
-export * from './lib/NgsiLdConnector';
-export * from './lib/OpenIdFetcher';
+export * from "./lib/NgsiLdConnector";
+export * from "./lib/OpenIdFetcher";

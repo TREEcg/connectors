@@ -1,2 +1,1 @@
-
-export * from './lib/connector-all';
+export * from "./lib/connectorAll";

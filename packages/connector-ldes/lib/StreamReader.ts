@@ -1,35 +1,47 @@
-import * as RDF from "@rdfjs/types";
-import { LDESClient } from "@treecg/actor-init-ldes-client";
-import { SimpleStream, Stream } from "@treecg/connector-types";
+import type * as RDF from "@rdfjs/types";
+import type { LDESClient } from "@treecg/actor-init-ldes-client";
+import { OutputRepresentation } from "@treecg/actor-init-ldes-client";
+import type { Stream } from "@treecg/connector-types";
+import { SimpleStream } from "@treecg/connector-types";
 
 export interface Quad extends RDF.Quad {
 
 }
 
-type LDESItem = { "type": "data" | "metadata", "data": Quad[] };
+interface LDESItem {
+    "type": "data" | "metadata"; "data": Quad[];
+}
 
 export interface LDESReaderConfig {
-    client: LDESClient,
-    _init: any,
-    url: string,
+    client: LDESClient;
+    _init: any;
+    url: string;
 }
 
 export async function startLDESStreamReader(config: LDESReaderConfig): Promise<Stream<LDESItem>> {
-    const stream = config.client.createReadStream(config.url, { representation: "Quads" })
-    const out = new SimpleStream<LDESItem>(async () => { stream.emit("close"); });
+    const stream = config.client.createReadStream(config.url, { representation: OutputRepresentation.Quads });
+    const out = new SimpleStream<LDESItem>(async () => {
+        stream.emit("close");
+    });
 
     stream.on("data", member => {
-        out.push({ "type": "data", data: member })
+        out.push({ type: "data", data: member }).catch(error => {
+            throw error;
+        });
     });
 
     stream.on("metadata", member => {
-        out.push({ "type": "metadata", data: member })
+        out.push({ type: "metadata", data: member }).catch(error => {
+            throw error;
+        });
     });
 
     stream.emit("close");
 
     stream.on("end", () => {
-        out.end();
+        out.end().catch(error => {
+            throw error;
+        });
     });
 
     return out;
@@ -37,11 +49,11 @@ export async function startLDESStreamReader(config: LDESReaderConfig): Promise<S
 
 export class StreamReader {
     private readonly config: LDESReaderConfig;
-    constructor(client: LDESClient, _init: any, url: string) {
+    public constructor(client: LDESClient, _init: any, url: string) {
         this.config = { client, _init, url };
     }
 
-    stream(): Promise<Stream<LDESItem>> {
+    public stream(): Promise<Stream<LDESItem>> {
         return startLDESStreamReader(this.config);
     }
 }

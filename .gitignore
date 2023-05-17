@@ -6,3 +6,4 @@ packages/**/*.d.ts
 .nyc_output
 lerna-debug.log
 components
+**/*.tsbuildinfo

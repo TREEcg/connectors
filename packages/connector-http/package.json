@@ -2,10 +2,11 @@
   "name": "@treecg/connector-http",
   "version": "1.0.6",
   "description": "Simple HTTP connector",
+  "type": "module",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.js",
   "types": "index",
   "directories": {
@@ -27,14 +28,14 @@
   "scripts": {
     "test": "jest",
     "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r chttp --typeScopedContexts"
+    "build:ts": "tsc",
+    "build:components": "componentsjs-generator -i ../../.componentsignore.json -r chttp"
   },
   "bugs": {
     "url": "https://github.com/TREEcg/connectors/issues"
   },
   "dependencies": {
-    "@treecg/connector-types": "^1.1.7",
-    "node-fetch": "^2.6.1"
+    "@treecg/connector-types": "^1.1.8",
+    "node-fetch": "^3.3.1"
   }
 }

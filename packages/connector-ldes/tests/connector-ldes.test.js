@@ -1,6 +1,6 @@
 'use strict';
 
-const connectorLdes = require('..');
+import connectorLdes from "..";
 
 describe('connector-ldes', () => {
     it('needs tests');

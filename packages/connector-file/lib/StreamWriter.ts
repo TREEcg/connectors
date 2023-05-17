@@ -1,21 +1,23 @@
-import { fromSerializer, StreamWriterFactory, Writer } from "@treecg/connector-types";
 import { appendFile, writeFile } from "fs/promises";
-import { FileConnectorType } from "..";
-import { FileReaderConfig } from "./StreamReader";
 import { isAbsolute } from "path";
+import type { StreamWriterFactory, Writer } from "@treecg/connector-types";
+import { fromSerializer } from "@treecg/connector-types";
+import { FileConnectorType } from "..";
+import type { FileReaderConfig } from "./StreamReader";
 
-export interface FileWriterConfig extends FileReaderConfig { }
+export type FileWriterConfig = FileReaderConfig
 
-export async function startFileStreamWriter<T>(config: FileWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
+export async function startFileStreamWriter<T>(config: FileWriterConfig,
+    serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
     const ser = fromSerializer(serializer);
-    const path = isAbsolute(config.path) ? config.path : process.cwd() + "/" + config.path;
+    const path = isAbsolute(config.path) ? config.path : `${process.cwd()}/${config.path}`;
     const encoding: BufferEncoding = <BufferEncoding>config.encoding || "utf-8";
 
     if (!config.onReplace) {
-        await writeFile(path, "", { encoding })
+        await writeFile(path, "", { encoding });
     }
 
-    const push = async (item: T) => {
+    const push = async (item: T): Promise<void> => {
         const string = await ser(item);
 
         if (config.onReplace) {
@@ -26,15 +28,15 @@ export async function startFileStreamWriter<T>(config: FileWriterConfig, seriali
     };
 
     return {
-        push, disconnect: async () => { }
-    }
+        push, async disconnect() { },
+    };
 }
-
 
 export class FileStreamWriterFactory implements StreamWriterFactory<FileWriterConfig> {
     public readonly type = FileConnectorType;
 
-    build<T>(config: FileWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
+    public build<T>(config: FileWriterConfig,
+        serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
         return startFileStreamWriter(config, serializer);
     }
 }
