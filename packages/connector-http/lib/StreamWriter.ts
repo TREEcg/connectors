@@ -37,9 +37,9 @@ export async function startHttpStreamWriter<T>(config: HttpWriterConfig, seriali
         });
     }
 
-    const disconnect = async () => { };
+    const end = async () => { };
 
-    return { push, disconnect };
+    return { push, end };
 }
 
 export class HttpStreamWriterFactory implements StreamWriterFactory<HttpWriterConfig> {

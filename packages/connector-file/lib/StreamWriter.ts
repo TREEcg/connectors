@@ -25,8 +25,12 @@ export async function startFileStreamWriter<T>(config: FileWriterConfig, seriali
         }
     };
 
+    const end = async () => {
+
+    };
+
     return {
-        push, disconnect: async () => { }
+        push, end
     }
 }
 

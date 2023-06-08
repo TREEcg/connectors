@@ -4,7 +4,7 @@ export type Serializers<T> = { [P in keyof T]?: (item: T[P]) => string | Promise
 
 export interface Writer<T> {
   push(item: T): Promise<void>;
-  disconnect(): Promise<void>;
+  end(): Promise<void>;
 }
 
 export interface Stream<T> {

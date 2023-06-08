@@ -33,11 +33,11 @@ export async function startWsStreamWriter<T>(config: WsWriterConfig, serializer?
         await new Promise(res => ws.send(msg, () => res(undefined)));
     }
 
-    const disconnect = async () => {
+    const end = async () => {
         ws.close();
     }
 
-    return { push, disconnect };
+    return { push, end };
 }
 
 export class WsStreamWriterFactory implements StreamWriterFactory<WsWriterConfig> {

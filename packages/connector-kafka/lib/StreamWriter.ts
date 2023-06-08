@@ -36,11 +36,11 @@ export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig, seria
         );
     };
 
-    const disconnect = async () => {
+    const end = async () => {
         await producer.disconnect();
     };
 
-    return { push, disconnect };
+    return { push, end };
 }
 
 export class KafkaStreamWriterFactory implements StreamWriterFactory<KafkaWriterConfig> {
