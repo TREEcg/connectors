@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-http",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Simple HTTP connector",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
@@ -34,7 +34,7 @@
     "url": "https://github.com/TREEcg/connectors/issues"
   },
   "dependencies": {
-    "@treecg/connector-types": "^1.1.10",
+    "@treecg/connector-types": "^1.1.11",
     "node-fetch": "^2.6.1"
   },
   "gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314"
