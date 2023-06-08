@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-all",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Aggregate all connectors defined in @treecg",
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",

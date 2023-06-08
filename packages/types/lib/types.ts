@@ -9,7 +9,7 @@ export interface Writer<T> {
 
 export interface Stream<T> {
   lastElement?: T;
-  disconnect(): Promise<void>;
+  end(): Promise<void>;
   data(listener: (t: T) => PromiseLike<void> | void): this;
   on(event: "data", listener: (t: T) => PromiseLike<void> | void): this;
   on(event: "end", listener: () => PromiseLike<void> | void): this;
