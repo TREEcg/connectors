@@ -115,14 +115,15 @@ export class ReaderFactory<C> {
     }
 }
 
-function genericSerialize<T>(item: T): string | PromiseLike<string> {
+function genericSerialize<T>(item: T | object): string | PromiseLike<string> {
     if (typeof item === "string" || item instanceof String) {
-        return <string><unknown>item;
-    }
-    try {
-        return JSON.stringify(item);
-    } catch {
-        return (<any>item).toString();
+        return <string>item;
+    } else {
+        try {
+            return JSON.stringify(item);
+        } catch {
+            return (<object>item).toString();
+        }
     }
 }
 
