@@ -65,6 +65,7 @@ module.exports = {
             "error",
             { prefer: "type-imports" },
         ],
+        "@typescript-eslint/no-namespace": "off",
         "import/order": [
             "error",
             {

@@ -30,17 +30,17 @@ export async function loadWriterConfig(subject: rdf.Term, match: MatchFunction):
     }
 
     switch (types[0].value) {
-    case CONN.WsWriterChannel:
-        return { type: WSConnectorType, config: await objToWsConfig(subject, matchObject) };
+        case CONN.WsWriterChannel:
+            return { type: WSConnectorType, config: await objToWsConfig(subject, matchObject) };
 
-    case CONN.FileWriterChannel:
-        return { type: FileConnectorType, config: await objToFileConfig(subject, matchObject) };
+        case CONN.FileWriterChannel:
+            return { type: FileConnectorType, config: await objToFileConfig(subject, matchObject) };
 
-    case CONN.HttpWriterChannel:
-        return { type: HTTPConnectorType, config: await objToHTTPConfig(subject, matchObject) };
+        case CONN.HttpWriterChannel:
+            return { type: HTTPConnectorType, config: await objToHTTPConfig(subject, matchObject) };
 
-    case CONN.KafkaWriterChannel:
-        return { type: KafkaConnectorType, config: await objToKafkaConfig(subject, matchObject) };
+        case CONN.KafkaWriterChannel:
+            return { type: KafkaConnectorType, config: await objToKafkaConfig(subject, matchObject) };
     }
 
     throw new Error(`Type not supported ${types[0].value}`);
