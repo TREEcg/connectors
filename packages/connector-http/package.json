@@ -35,7 +35,6 @@
     "url": "https://github.com/TREEcg/connectors/issues"
   },
   "dependencies": {
-    "@treecg/connector-types": "^1.1.8",
-    "node-fetch": "^3.3.1"
+    "@treecg/connector-types": "^1.1.8"
   }
 }
