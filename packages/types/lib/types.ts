@@ -190,6 +190,7 @@ export class SimpleStream<T> implements Stream<T> {
     }
 
     public async end(): Promise<void> {
+        await this.disconnect();
         await Promise.all(this.endHandlers.map(handler => handler()));
     }
 
