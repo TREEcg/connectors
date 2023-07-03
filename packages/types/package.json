@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-types",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Types joning all connectors",
   "type": "module",
   "lsd:module": true,
