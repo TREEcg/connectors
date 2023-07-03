@@ -27,8 +27,12 @@ export async function startFileStreamWriter<T>(config: FileWriterConfig,
         }
     };
 
+    const end = async (): Promise<void> => {
+
+    };
+
     return {
-        push, async disconnect() { },
+        push, end
     };
 }
 

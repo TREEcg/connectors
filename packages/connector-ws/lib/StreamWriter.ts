@@ -35,11 +35,11 @@ export async function startWsStreamWriter<T>(config: WsWriterConfig,
         await new Promise<void>(res => ws.send(msg, () => res()));
     };
 
-    const disconnect = async (): Promise<void> => {
+    const end = async (): Promise<void> => {
         ws.close();
     };
 
-    return { push, disconnect };
+    return { push, end };
 }
 
 export class WsStreamWriterFactory implements StreamWriterFactory<WsWriterConfig> {

@@ -38,9 +38,9 @@ export async function startHttpStreamWriter<T>(config: HttpWriterConfig,
         });
     };
 
-    const disconnect = async (): Promise<void> => { };
+    const end = async (): Promise<void> => { };
 
-    return { push, disconnect };
+    return { push, end };
 }
 
 export class HttpStreamWriterFactory implements StreamWriterFactory<HttpWriterConfig> {

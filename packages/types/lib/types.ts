@@ -3,16 +3,16 @@ export type Deserializers<T> = {[P in keyof T]?: (member: string) => T[P] | Prom
 export type Serializers<T> = {[P in keyof T]?: (item: T[P]) => string | PromiseLike<string> };
 
 export interface Writer<T> {
-    push: (item: T) => Promise<void>;
-    disconnect: () => Promise<void>;
+    push(item: T): Promise<void>;
+    end(): Promise<void>;
 }
 
 export interface Stream<T> {
     lastElement?: T;
-    disconnect: () => Promise<void>;
-    data: (listener: (t: T) => PromiseLike<void> | void) => this;
-    on: ((event: "data", listener: (t: T) => PromiseLike<void> | void) => this)
-    & ((event: "end", listener: () => PromiseLike<void> | void) => this);
+    end(): Promise<void>;
+    data(listener: (t: T) => PromiseLike<void> | void): this;
+    on(event: "data", listener: (t: T) => PromiseLike<void> | void): this;
+    on(event: "end", listener: () => PromiseLike<void> | void): this;
 }
 
 export interface Typed<C> {

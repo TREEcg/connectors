@@ -1,5 +1,5 @@
 {
-  "name": "connectors",
+  "name": "ldes-connectors",
   "repository": "https://github.com/TREEcg/connectors",
   "workspaces": [
     "packages/*"

@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-all",
-  "version": "1.0.12",
+  "version": "1.0.17",
   "description": "Aggregate all connectors defined in @treecg",
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
@@ -35,16 +35,17 @@
   },
   "dependencies": {
     "@rdfjs/types": "^1.1.0",
-    "@treecg/connector-file": "^1.0.7",
-    "@treecg/connector-http": "^1.0.6",
-    "@treecg/connector-kafka": "^1.2.6",
-    "@treecg/connector-ldes": "^1.1.5",
-    "@treecg/connector-types": "^1.1.8",
-    "@treecg/connector-ws": "^1.1.8",
-    "@treecg/types": "^0.4.2"
+    "@treecg/connector-file": "^1.0.11",
+    "@treecg/connector-http": "^1.0.9",
+    "@treecg/connector-kafka": "^1.2.9",
+    "@treecg/connector-ldes": "^1.1.6",
+    "@treecg/connector-types": "^1.1.11",
+    "@treecg/connector-ws": "^1.1.11",
+    "@treecg/types": "^0.4.5"
   },
   "devDependencies": {
     "@types/n3": "^1.10.4",
     "n3": "^1.17.0"
-  }
+  },
+  "gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314"
 }

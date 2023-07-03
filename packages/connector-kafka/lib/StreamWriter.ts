@@ -18,13 +18,15 @@ export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig,
     const ser = fromSerializer(serializer);
     const topic = config.topic.name;
 
-    const brokerConfig: any = {};
+    const brokerConfig: unknown = {};
     if (typeof config.broker === "string" || config.broker instanceof String) {
-        Object.assign(brokerConfig, JSON.parse(readFileSync(<string>config.broker, "utf-8")));
+        Object.assign(<BrokerConfig>brokerConfig, JSON.parse(readFileSync(<string>config.broker, "utf-8")));
     } else {
-        Object.assign(brokerConfig, config.broker);
+        Object.assign(<BrokerConfig>brokerConfig, config.broker);
     }
-    brokerConfig.brokers = brokerConfig.hosts;
+    if(brokerConfig && (<BrokerConfig>brokerConfig).hosts) {
+        (<KafkaConfig>brokerConfig).brokers =(<BrokerConfig>brokerConfig).hosts;
+    }
 
     const kafka = new Kafka(<KafkaConfig>brokerConfig);
 
@@ -38,11 +40,11 @@ export async function startKafkaStreamWriter<T>(config: KafkaWriterConfig,
         );
     };
 
-    const disconnect = async (): Promise<void> => {
+    const end = async (): Promise<void> => {
         await producer.disconnect();
     };
 
-    return { push, disconnect };
+    return { push, end };
 }
 
 export class KafkaStreamWriterFactory implements StreamWriterFactory<KafkaWriterConfig> {

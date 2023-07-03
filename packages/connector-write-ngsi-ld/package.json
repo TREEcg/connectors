@@ -1,6 +1,6 @@
 {
 	"name": "@treecg/connector-write-ngsi-ld",
-	"version": "0.0.29",
+	"version": "0.0.30",
 	"description": "> TODO: description",
 	"homepage": "https://github.com/TREEcg/connectors#readme",
 	"license": "MIT",
@@ -37,5 +37,5 @@
 		"interval-promise": "^1.4.0",
 		"node-fetch": "^3.3.1"
 	},
-	"gitHead": "96160f536c5624c7175a589e1dc324664c1db662"
+	"gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314"
 }
