@@ -1,21 +1,24 @@
-'use strict';
+import { describe, test, expect } from "@jest/globals";
+import type { Term } from "@rdfjs/types";
+import type { Typed } from "@treecg/connector-types";
+import { Store, Parser, NamedNode } from "n3";
+import type { ReaderConfig, WriterConfig } from "..";
+import { loadReaderConfig, loadWriterConfig } from "..";
 
-const { Store, Parser, NamedNode } = require('n3');
-const connectorAll = require('..');
 
-async function stringToConfigType(subj, input, reader) {
+async function stringToConfigType(subj: Term, input: string, reader: boolean): Promise<Typed<ReaderConfig> | Typed<WriterConfig>> {
     const parser = new Parser();
     const quads = parser.parse(input);
     const store = new Store(quads);
 
     if (reader) {
-        return await connectorAll.loadReaderConfig(subj, (s, p, o) => store.getQuads(s, p, o, null));
+        return await loadReaderConfig(subj, async (s, p, o) => store.getQuads(<Term | null>s, <Term | null>p, <Term | null>o, null));
     } else {
-        return await connectorAll.loadWriterConfig(subj, (s, p, o) => store.getQuads(s, p, o, null));
+        return await loadWriterConfig(subj, async (s, p, o) => store.getQuads(<Term | null>s, <Term | null>p, <Term | null>o, null));
     }
 }
 
-describe('connector-all', () => {
+describe("connector-all", () => {
     test("WS-config-reader-1", async () => {
         const out = await stringToConfigType(new NamedNode("test"), `
 @prefix js: <https://w3id.org/conn/js#> .

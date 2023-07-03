@@ -4,6 +4,7 @@
   "description": "Aggregate all connectors defined in @treecg",
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
+  "type": "module",
   "lsd:module": true,
   "license": "MIT",
   "main": "index.js",
@@ -25,8 +26,8 @@
     "url": "git+https://github.com/TREEcg/connectors.git"
   },
   "scripts": {
-    "test": "jest --detectOpenHandles",
-    "build": "npm run build:ts",
+    "test": "npm run build:ts && NODE_OPTIONS=--experimental-vm-modules npx jest --coverageThreshold '{}'",
+    "build": "npm run build:ts && npm run build:components",
     "build:ts": "tsc"
   },
   "bugs": {
@@ -43,6 +44,7 @@
     "@treecg/types": "^0.4.2"
   },
   "devDependencies": {
-    "n3": "^1.16.4"
+    "@types/n3": "^1.10.4",
+    "n3": "^1.17.0"
   }
 }
