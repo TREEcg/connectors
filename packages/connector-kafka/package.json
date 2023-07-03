@@ -4,8 +4,9 @@
   "description": "Simple Kafka connector",
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
+  "type": "module",
   "lsd:module": true,
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.js",
   "types": "index",
   "directories": {
@@ -25,17 +26,19 @@
     "url": "git+https://github.com/TREEcg/connectors.git"
   },
   "scripts": {
-    "test": "jest --detectOpenHandles",
+    "test": "npm run setup-test-env && sleep 2 && npm run build:ts && NODE_OPTIONS=--experimental-vm-modules npx jest --coverageThreshold '{}' && npm run shutdown-test-env",
+    "setup-test-env": "sudo docker-compose -f tests/docker-compose.test.yml up -d",
+    "shutdown-test-env": "sudo docker-compose -f tests/docker-compose.test.yml down",
     "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
-    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r ckafka --typeScopedContexts"
+    "build:ts": "tsc",
+    "build:components": "componentsjs-generator -i ../../.componentsignore.json -r ckafka"
   },
   "bugs": {
     "url": "https://github.com/TREEcg/connectors/issues"
   },
   "dependencies": {
     "@treecg/connector-types": "^1.1.11",
-    "kafkajs": "^1.16.0"
+    "kafkajs": "^2.2.4"
   },
   "gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314"
 }

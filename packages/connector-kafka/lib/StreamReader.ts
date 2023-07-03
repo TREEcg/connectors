@@ -1,28 +1,33 @@
-import { fromDeserializer, SimpleStream, Stream, StreamReaderFactory } from "@treecg/connector-types";
-import { Kafka, KafkaConfig, KafkaMessage } from 'kafkajs';
 import { readFileSync } from "node:fs";
+import type { Stream, StreamReaderFactory } from "@treecg/connector-types";
+import { fromDeserializer, SimpleStream } from "@treecg/connector-types";
+import type { KafkaConfig, KafkaMessage } from "kafkajs";
+import { Kafka } from "kafkajs";
 import { KafkaConnectorType } from "..";
-import { BrokerConfig, ConsumerConfig } from "./Common";
+import type { BrokerConfig, ConsumerConfig } from "./Common";
 
 export interface KafkaReaderConfig {
     topic: {
-        name: string,
-        fromBeginning?: boolean,
-    },
-    consumer: ConsumerConfig,
-    broker: string | BrokerConfig,
+        name: string;
+        fromBeginning?: boolean;
+    };
+    consumer: ConsumerConfig;
+    broker: string | BrokerConfig;
 }
 
-export async function startKafkaStreamReader<T>(config: KafkaReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
+export async function startKafkaStreamReader<T>(config: KafkaReaderConfig,
+    deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
     const des = fromDeserializer(deserializer);
 
-    const brokerConfig: any = {};
+    const brokerConfig: unknown = {};
     if (typeof config.broker === "string" || config.broker instanceof String) {
-        Object.assign(brokerConfig, JSON.parse(readFileSync(<string>config.broker, "utf-8")));
+        Object.assign(<BrokerConfig>brokerConfig, JSON.parse(readFileSync(<string>config.broker, "utf-8")));
     } else {
-        Object.assign(brokerConfig, config.broker);
+        Object.assign(<BrokerConfig>brokerConfig, config.broker);
     }
-    brokerConfig.brokers = brokerConfig.hosts;
+    if(brokerConfig && (<BrokerConfig>brokerConfig).hosts) {
+        (<KafkaConfig>brokerConfig).brokers =(<BrokerConfig>brokerConfig).hosts;
+    }
 
     const kafka = new Kafka(<KafkaConfig>brokerConfig);
 
@@ -37,12 +42,16 @@ export async function startKafkaStreamReader<T>(config: KafkaReaderConfig, deser
     await consumer.subscribe({ topic: config.topic.name, fromBeginning: config.topic.fromBeginning });
 
     consumer.run({
-        eachMessage: async ({ topic, message }: { topic: string, message: KafkaMessage }) => {
+        async eachMessage({ topic, message }: { topic: string; message: KafkaMessage }) {
             if (topic === config.topic.name) {
-                const element = await des(message.value!.toString());
-                stream.push(element);
+                const element = await des(message.value?.toString() ?? "");
+                stream.push(element).catch(error => {
+                    throw error;
+                });
             }
-        }
+        },
+    }).catch(error => {
+        throw error;
     });
 
     return stream;
@@ -51,7 +60,8 @@ export async function startKafkaStreamReader<T>(config: KafkaReaderConfig, deser
 export class KafkaStreamReaderFactory implements StreamReaderFactory<KafkaReaderConfig> {
     public readonly type = KafkaConnectorType;
 
-    build<T>(config: KafkaReaderConfig, deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
+    public build<T>(config: KafkaReaderConfig,
+        deserializer?: (message: string) => T | PromiseLike<T>): Promise<Stream<T>> {
         return startKafkaStreamReader(config, deserializer);
     }
 }

@@ -1,25 +1,35 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "module": "commonjs",
-    "lib": ["es6", "es2019", "esnext.asynciterable"],
-    "target": "es2017",
+    "lib": ["ES2022"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "composite": true,
+    "moduleResolution": "node",
     "preserveConstEnums": true,
     "downlevelIteration": true,
     "skipLibCheck": true,
     "strict": true,
     "strictFunctionTypes": false,
     "declaration": true,
+    "declarationMap": true,
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "incremental": true,
+    "esModuleInterop": true,
+    "types": ["node"],
+    "sourceMap": true
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   },
   "include": [
     "packages/*/index.ts",
     "packages/*/bin/**/*",
     "packages/*/lib/**/*",
   ],
-  "exclude": ["**/node_modules", "**/test/*"]
+  "exclude": ["**/node_modules", "**/tests/*"]
 }

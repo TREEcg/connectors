@@ -2,10 +2,11 @@
   "name": "@treecg/connector-types",
   "version": "1.1.11",
   "description": "Types joning all connectors",
+  "type": "module",
   "lsd:module": true,
   "author": "ajuvercr <arthur.vercruysse@ugent.be>",
   "homepage": "https://github.com/TREEcg/connectors#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.js",
   "types": "index",
   "directories": {
@@ -28,15 +29,16 @@
     "access": "public"
   },
   "scripts": {
+    "test": "npm run build:ts && NODE_OPTIONS=--experimental-vm-modules npx jest --coverageThreshold '{}'",
     "build": "npm run build:ts && npm run build:components",
-    "build:ts": "node node_modules/typescript/bin/tsc",
-    "build:components": "node ../../node_modules/componentsjs-generator/bin/componentsjs-generator -i ../../.componentsignore.json -r ctypes --typeScopedContexts"
+    "build:ts": "tsc",
+    "build:components": "componentsjs-generator -i ../../.componentsignore.json -r ctypes"
   },
   "bugs": {
     "url": "https://github.com/TREEcg/connectors/issues"
   },
   "gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314",
   "devDependencies": {
-    "typescript": "^4.6.3"
+    "typescript": "^5.1.6"
   }
 }

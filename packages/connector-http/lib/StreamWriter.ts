@@ -1,43 +1,44 @@
-import { fromSerializer, StreamWriterFactory, Writer } from "@treecg/connector-types";
+import * as http from "http";
+import type { IncomingMessage } from "http";
+import type * as https from "https";
+import type { StreamWriterFactory, Writer } from "@treecg/connector-types";
+import { fromSerializer } from "@treecg/connector-types";
 import { HTTPConnectorType } from "..";
 
-import * as https from "https";
-import * as http from "http";
-import { IncomingMessage } from "http";
-
 export interface HttpWriterConfig {
-    url: string,
-    method: string,
+    url: string;
+    method: string;
 }
 
-
-export async function startHttpStreamWriter<T>(config: HttpWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
+export async function startHttpStreamWriter<T>(config: HttpWriterConfig,
+    serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
     const ser = fromSerializer(serializer);
-    const requestConfig = <https.RequestOptions>new URL(config.url);
+    const requestConfig = <https.RequestOptions> new URL(config.url);
 
-
-    const push = async (item: T) => {
+    const push = async (item: T): Promise<void> => {
         const body = await ser(item);
 
-        await new Promise(async res => {
-            let options = {
+        await new Promise(res => {
+            const options = {
                 hostname: requestConfig.hostname,
                 path: requestConfig.path,
                 method: config.method,
                 port: requestConfig.port,
             };
-            const cb = (response: IncomingMessage) => {
+            const cb = (response: IncomingMessage): void => {
                 response.on("data", () => { });
-                response.on("end", () => { res(null); });
+                response.on("end", () => {
+                    res(null);
+                });
             };
 
             const req = http.request(options, cb);
             req.write(body, () => res(null));
             req.end();
         });
-    }
+    };
 
-    const end = async () => { };
+    const end = async (): Promise<void> => { };
 
     return { push, end };
 }
@@ -45,7 +46,8 @@ export async function startHttpStreamWriter<T>(config: HttpWriterConfig, seriali
 export class HttpStreamWriterFactory implements StreamWriterFactory<HttpWriterConfig> {
     public readonly type = HTTPConnectorType;
 
-    build<T>(config: HttpWriterConfig, serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
+    public build<T>(config: HttpWriterConfig,
+        serializer?: (item: T) => string | PromiseLike<string>): Promise<Writer<T>> {
         return startHttpStreamWriter(config, serializer);
     }
 }

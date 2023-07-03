@@ -6,5 +6,10 @@
     "Deserializers",
     "LDESItem",
     "SimpleStream",
-    "SASLOptions"
+    "SASLOptions",
+    "Headers",
+    "EventEmitter",
+    "RDF.Stream",
+    "KafkaConfig",
+    "SASLMechanismOptions"
 ]
