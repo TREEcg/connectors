@@ -29,8 +29,8 @@ describe("connector-http", () => {
         expect(items).toEqual([{ test: 2 }, { test: 3 }]);
         
         await Promise.all([
-            streamReader.disconnect(),
-            streamWriter.disconnect()
+            streamReader.end(),
+            streamWriter.end()
         ]);
     });
 });

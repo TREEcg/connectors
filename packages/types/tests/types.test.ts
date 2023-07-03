@@ -25,8 +25,10 @@ describe("types/common", () => {
         stream.push(2).catch(error => {
             throw error;
         });
+        
         expect(item).toStrictEqual([2]);
         expect(stream.lastElement).toEqual(2);
+
         stream.on("data", async x => {
             await sleep(300);
             item.push(x);
@@ -34,14 +36,16 @@ describe("types/common", () => {
         stream.push(4).catch(error => {
             throw error;
         });
+
         expect(item).toStrictEqual([2, 4]);
         expect(stream.lastElement).toEqual(4);
         await sleep(320);
         expect(item).toStrictEqual([2, 4, 4]);
 
-        stream.end().catch(error => {
+        await stream.end().catch(error => {
             throw error;
         });
+        
         expect(ended).toEqual(true);
         stream.disconnect().catch(error => {
             throw error;

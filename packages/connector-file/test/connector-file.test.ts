@@ -44,7 +44,7 @@ describe("connector-file", () => {
         expect(stream.lastElement).toBe("foobar");
         expect(elements).toStrictEqual(["something", "somethingelse", "43", "foobar"]);
 
-        await stream.disconnect();
+        await stream.end();
     });
 
     test("writer", async () => {
@@ -66,7 +66,7 @@ describe("connector-file", () => {
         await writer.push("43");
         content = await readFile("test.txt", "utf8");
         expect(content).toBe("43");
-        await writer.disconnect();
+        await writer.end();
     });
 
     test("chained", async () => {
@@ -98,8 +98,8 @@ describe("connector-file", () => {
         await writer.push("43");
         await sleep(200);
         expect(elements).toStrictEqual(["data", "43"]);
-        await stream.disconnect();
-        await writer.disconnect();
+        await stream.end();
+        await writer.end();
     });
 });
 

@@ -25,8 +25,8 @@ describe("connector-ws", () => {
         expect(items).toEqual([{ test: 2 }, { test: 3 }]);
         
         await Promise.all([
-            streamWriter.disconnect(),
-            streamReader.disconnect()
+            streamWriter.end(),
+            streamReader.end()
         ]);
     });
 });
