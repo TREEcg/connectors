@@ -43,7 +43,9 @@ export class EventStreamMetadataExtractor extends ActorRdfMetadataExtractTree {
 
         const out = await super.run(action);
 
-        out.metadata.mine = data[this.id!];
+        if(this.id) {
+            out.metadata.mine = data[this.id];
+        }
         return out;
     }
 

@@ -4,22 +4,25 @@ import { OutputRepresentation } from "@treecg/actor-init-ldes-client";
 import type { Stream } from "@treecg/connector-types";
 import { SimpleStream } from "@treecg/connector-types";
 
-export interface Quad extends RDF.Quad {
-
-}
+export type Quad = RDF.Quad
 
 interface LDESItem {
-    "type": "data" | "metadata"; "data": Quad[];
+    "type": "data" | "metadata"; 
+    "data": Quad[];
 }
 
 export interface LDESReaderConfig {
     client: LDESClient;
-    _init: any;
+    _init: unknown;
     url: string;
 }
 
 export async function startLDESStreamReader(config: LDESReaderConfig): Promise<Stream<LDESItem>> {
-    const stream = config.client.createReadStream(config.url, { representation: OutputRepresentation.Quads });
+    const stream = config.client.createReadStream(config.url, { 
+        representation: OutputRepresentation.Quads, 
+        ...(<object>config._init) 
+    });
+    
     const out = new SimpleStream<LDESItem>(async () => {
         stream.emit("close");
     });
@@ -49,7 +52,7 @@ export async function startLDESStreamReader(config: LDESReaderConfig): Promise<S
 
 export class StreamReader {
     private readonly config: LDESReaderConfig;
-    public constructor(client: LDESClient, _init: any, url: string) {
+    public constructor(client: LDESClient, _init: unknown, url: string) {
         this.config = { client, _init, url };
     }
 
