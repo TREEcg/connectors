@@ -1,6 +1,6 @@
 {
   "name": "@treecg/connector-ldes",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "description": "StreamReader for LDES",
   "type": "module",
   "lsd:module": true,
@@ -50,7 +50,7 @@
     "@treecg/actor-rdf-metadata-extract-tree": "^2.0.0",
     "@treecg/bus-rdf-filter-object": "^4.0.0",
     "@treecg/bus-rdf-frame": "^4.0.0",
-    "@treecg/connector-types": "^1.1.11",
+    "@treecg/connector-types": "^1.2.0",
     "arrayify-stream": "^2.0.1",
     "rdf-data-factory": "^1.1.2",
     "rdf-parse": "^2.3.2"
