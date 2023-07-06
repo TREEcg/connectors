@@ -1,6 +1,6 @@
 {
 	"name": "@treecg/connector-write-ngsi-ld",
-	"version": "0.0.32",
+	"version": "0.0.34",
 	"description": "> TODO: description",
 	"homepage": "https://github.com/TREEcg/connectors#readme",
 	"license": "MIT",
@@ -35,7 +35,7 @@
 		"@brechtvdv/rdfs2ngsi-ld.js": "git+https://github.com/julianrojas87/rdfs2ngsi-ld.git",
 		"@treecg/ldes-types": "^0.0.4-alpha.0",
 		"interval-promise": "^1.4.0",
-		"node-fetch": "^3.3.1"
+		"node-fetch": "^2.6.6"
 	},
 	"gitHead": "f98f1b97a81d44660a9642376df0e983a7e75314"
 }
